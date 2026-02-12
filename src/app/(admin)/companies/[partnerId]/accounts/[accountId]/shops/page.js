@@ -2,6 +2,8 @@
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
 import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import AddShopModal from "@/components/ui/modal/AddShopModal";
+import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/api";
 import { useRouter } from "next/navigation";
@@ -12,7 +14,8 @@ const AccountShopsPage = ({ params }) => {
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const router = useRouter();
 
     const fetchShops = async (page = 1) => {
@@ -52,7 +55,7 @@ const AccountShopsPage = ({ params }) => {
         {
             header: "Type",
             accessor: "shop_type",
-            render: (type) => type ? type.name : 'N/A'
+            render: (type) => type ? type.title : 'N/A'
         },
         { header: "Contract", accessor: "contract_status" },
         {
@@ -88,13 +91,33 @@ const AccountShopsPage = ({ params }) => {
 
     const handleIdClick = (row) => {
         setSelectedRow(row);
-        setIsModalOpen(true);
+        setIsEditModalOpen(true);
+    };
+
+    const handleAddShop = () => {
+        setIsAddModalOpen(true);
+    };
+
+    const handleSaveShop = async (formData) => {
+        await axios.post(`/cms/accounts/${accountId}/shops`, formData);
+        fetchShops(); // Refresh list
+    };
+
+    const handleDownloadCsv = () => {
+        window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/shops/${accountId}`, '_blank');
     };
 
     return (
         <>
             <PageBreadCrumb pageTitle="Account Shops" />
             <div className="space-y-6">
+                <div className="flex justify-end">
+                    <TableActions
+                        onAdd={handleAddShop}
+                        onDownload={handleDownloadCsv}
+                        addButtonText="Add Shop"
+                    />
+                </div>
                 <HierarchyTable
                     columns={columns}
                     data={shops}
@@ -105,9 +128,15 @@ const AccountShopsPage = ({ params }) => {
             </div>
 
             <QuickEditModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+            />
+
+            <AddShopModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={handleSaveShop}
             />
         </>
     );

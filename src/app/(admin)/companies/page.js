@@ -2,6 +2,8 @@
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
 import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import AddPartnerModal from "@/components/ui/modal/AddPartnerModal";
+import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/api";
 import { useRouter } from "next/navigation";
@@ -11,7 +13,8 @@ const CompaniesPage = () => {
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const router = useRouter();
 
     const fetchPartners = async (page = 1) => {
@@ -79,13 +82,33 @@ const CompaniesPage = () => {
 
     const handleIdClick = (row) => {
         setSelectedRow(row);
-        setIsModalOpen(true);
+        setIsEditModalOpen(true);
+    };
+
+    const handleAddPartner = () => {
+        setIsAddModalOpen(true);
+    };
+
+    const handleSavePartner = async (formData) => {
+        await axios.post("/cms/partners", formData);
+        fetchPartners(); // Refresh list
+    };
+
+    const handleDownloadCsv = () => {
+        window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/partners`, '_blank');
     };
 
     return (
         <>
             <PageBreadCrumb pageTitle="Companies (Partners)" />
             <div className="space-y-6">
+                <div className="flex justify-end">
+                    <TableActions
+                        onAdd={handleAddPartner}
+                        onDownload={handleDownloadCsv}
+                        addButtonText="Add Partner"
+                    />
+                </div>
                 <div className="flex flex-col gap-10">
                     <HierarchyTable
                         columns={columns}
@@ -98,9 +121,15 @@ const CompaniesPage = () => {
             </div>
 
             <QuickEditModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+            />
+
+            <AddPartnerModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={handleSavePartner}
             />
         </>
     );

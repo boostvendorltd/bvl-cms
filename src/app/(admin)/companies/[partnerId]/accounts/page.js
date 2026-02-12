@@ -2,6 +2,8 @@
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
 import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import AddAccountModal from "@/components/ui/modal/AddAccountModal";
+import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/api";
 import { useRouter } from "next/navigation";
@@ -12,7 +14,8 @@ const PartnerAccountsPage = ({ params }) => {
     const [pagination, setPagination] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const router = useRouter();
 
     const fetchAccounts = async (page = 1) => {
@@ -78,13 +81,33 @@ const PartnerAccountsPage = ({ params }) => {
 
     const handleIdClick = (row) => {
         setSelectedRow(row);
-        setIsModalOpen(true);
+        setIsEditModalOpen(true);
+    };
+
+    const handleAddAccount = () => {
+        setIsAddModalOpen(true);
+    };
+
+    const handleSaveAccount = async (formData) => {
+        await axios.post(`/cms/partners/${partnerId}/accounts`, formData);
+        fetchAccounts(); // Refresh list
+    };
+
+    const handleDownloadCsv = () => {
+        window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/accounts/${partnerId}`, '_blank');
     };
 
     return (
         <>
             <PageBreadCrumb pageTitle="Partner Accounts" />
             <div className="space-y-6">
+                <div className="flex justify-end">
+                    <TableActions
+                        onAdd={handleAddAccount}
+                        onDownload={handleDownloadCsv}
+                        addButtonText="Add Account"
+                    />
+                </div>
                 <HierarchyTable
                     columns={columns}
                     data={accounts}
@@ -95,9 +118,15 @@ const PartnerAccountsPage = ({ params }) => {
             </div>
 
             <QuickEditModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+            />
+
+            <AddAccountModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSave={handleSaveAccount}
             />
         </>
     );

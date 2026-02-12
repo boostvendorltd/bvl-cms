@@ -2,6 +2,7 @@
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
 import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/api";
 
@@ -81,10 +82,19 @@ const ShopCustomersPage = ({ params }) => {
         setIsModalOpen(true);
     };
 
+    const handleDownloadCsv = () => {
+        window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/customers/${shopId}`, '_blank');
+    };
+
     return (
         <>
             <PageBreadCrumb pageTitle="Shop Customers" />
             <div className="space-y-6">
+                <div className="flex justify-end">
+                    <TableActions
+                        onDownload={handleDownloadCsv}
+                    />
+                </div>
                 <HierarchyTable
                     columns={columns}
                     data={customers}
