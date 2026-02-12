@@ -4,7 +4,11 @@ import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { fetchUserProfile } from "@/redux/features/auth-slice";
+
 export default function AdminLayout({
   children
 }) {
@@ -14,18 +18,30 @@ export default function AdminLayout({
     isMobileOpen
   } = useSidebar();
 
-  // Dynamic class for main content margin based on sidebar state
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!isAuthenticated && !user) {
+      dispatch(fetchUserProfile())
+        .unwrap()
+        .catch(() => {
+          router.push("/signin");
+        });
+    }
+  }, [isAuthenticated, user, dispatch, router]);
+
+  if (isLoading || !isAuthenticated) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
   const mainContentMargin = isMobileOpen ? "ml-0" : isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]";
   return <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
-      <AppSidebar />
-      <Backdrop />
-      {/* Main Content Area */}
-      <div className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}>
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
-      </div>
-    </div>;
+    <AppSidebar />
+    <Backdrop />
+    <div className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}>
+      <AppHeader />
+      <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+    </div>
+  </div>;
 }
