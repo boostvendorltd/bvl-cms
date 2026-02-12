@@ -50,8 +50,10 @@ const PartnerAccountsPage = ({ params }) => {
         { header: "City/Address", accessor: "address_1" },
         {
             header: "Status",
-            accessor: "status",
-            render: (value) => {
+            header: "Status",
+            accessor: "user",
+            render: (user) => {
+                const value = user?.status;
                 const statusMap = {
                     0: { label: 'Inactive', color: 'bg-red-100 text-red-800' },
                     1: { label: 'Active', color: 'bg-green-100 text-green-800' },
