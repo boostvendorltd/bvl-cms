@@ -35,6 +35,18 @@ export const login = createAsyncThunk(
     }
 );
 
+export const updateProfile = createAsyncThunk(
+    "auth/updateProfile",
+    async (userData, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/profile/update", userData);
+            return response.data.user;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+        }
+    }
+);
+
 export const logout = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
@@ -74,6 +86,10 @@ const authSlice = createSlice({
             .addCase(fetchUserProfile.rejected, (state) => {
                 state.user = null;
                 state.isAuthenticated = false;
+                state.isLoading = false;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.user = action.payload;
                 state.isLoading = false;
             })
             .addCase(login.pending, (state) => {

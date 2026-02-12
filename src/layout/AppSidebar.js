@@ -114,17 +114,17 @@ const AppSidebar = () => {
         pro: false
       }]
     }, {
-      icon: <CalenderIcon />,
-      name: "Calendar",
-      path: "/calendar"
+      icon: <GroupIcon />,
+      name: companiesLabel,
+      path: companiesPath
     }, {
       icon: <UserCircleIcon />,
       name: "User Profile",
       path: "/profile"
     }, {
-      icon: <GroupIcon />,
-      name: companiesLabel,
-      path: companiesPath
+      icon: <CalenderIcon />,
+      name: "Calendar",
+      path: "/calendar"
     }, {
       name: "Forms",
       icon: <ListIcon />,

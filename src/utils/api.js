@@ -39,6 +39,10 @@ api.interceptors.request.use(
             config.headers["X-XSRF-TOKEN"] = decodeURIComponent(token);
         }
 
+        if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+            delete config.headers["Content-Type"];
+        }
+
         return config;
     },
     (error) => {

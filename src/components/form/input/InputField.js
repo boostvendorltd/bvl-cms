@@ -5,6 +5,7 @@ const Input = ({
   name,
   placeholder,
   defaultValue,
+  value,
   onChange,
   className = "",
   min,
@@ -29,12 +30,12 @@ const Input = ({
     inputClasses += ` bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800`;
   }
   return <div className="relative">
-      <input type={type} id={id} name={name} placeholder={placeholder} defaultValue={defaultValue} onChange={onChange} min={min} max={max} step={step} disabled={disabled} className={inputClasses} />
+    <input type={type} id={id} name={name} placeholder={placeholder} defaultValue={defaultValue} value={value} onChange={onChange} min={min} max={max} step={step} disabled={disabled} className={inputClasses} />
 
-      {/* Optional Hint Text */}
-      {hint && <p className={`mt-1.5 text-xs ${error ? "text-error-500" : success ? "text-success-500" : "text-gray-500"}`}>
-          {hint}
-        </p>}
-    </div>;
+    {/* Optional Hint Text */}
+    {hint && <p className={`mt-1.5 text-xs ${error ? "text-error-500" : success ? "text-success-500" : "text-gray-500"}`}>
+      {hint}
+    </p>}
+  </div>;
 };
 export default Input;
