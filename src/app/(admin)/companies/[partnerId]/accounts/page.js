@@ -99,7 +99,7 @@ const PartnerAccountsPage = ({ params }) => {
 
     return (
         <>
-            <PageBreadCrumb pageTitle="Partner Accounts" />
+            <PageBreadCrumb pageTitle="Accounts" />
             <div className="space-y-6">
                 <div className="flex justify-end">
                     <TableActions
@@ -121,6 +121,23 @@ const PartnerAccountsPage = ({ params }) => {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+                fields={{
+                    name: { label: "Account Name" },
+                    email: { label: "Email" },
+                    phone: { label: "Phone" },
+                    account_representative: { label: "Representative" },
+                    address_1: { label: "Address" },
+                    status: {
+                        label: "Status",
+                        type: 'select',
+                        options: {
+                            0: { label: 'Inactive' }, 1: { label: 'Active' }, 2: { label: 'Pending' }, 3: { label: 'Archived' }
+                        }
+                    },
+                    user: { type: 'ignore' },
+                    partner_id: { type: 'ignore' }, // Hide ID
+                    created_at: { label: "Created At", type: 'datetime' }
+                }}
             />
 
             <AddAccountModal

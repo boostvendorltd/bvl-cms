@@ -88,7 +88,7 @@ const ShopCustomersPage = ({ params }) => {
 
     return (
         <>
-            <PageBreadCrumb pageTitle="Shop Customers" />
+            <PageBreadCrumb pageTitle="Customers" />
             <div className="space-y-6">
                 <div className="flex justify-end">
                     <TableActions
@@ -108,6 +108,20 @@ const ShopCustomersPage = ({ params }) => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 data={selectedRow}
+                fields={{
+                    name: { label: "Customer Name" },
+                    email: { label: "Email" },
+                    phone: { label: "Phone" },
+                    status: {
+                        label: "Status",
+                        type: 'select',
+                        options: {
+                            0: { label: 'Inactive' }, 1: { label: 'Active' }, 2: { label: 'Pending' }, 3: { label: 'Archived' }
+                        }
+                    },
+                    last_login_at: { label: "Last Login", type: 'datetime' },
+                    created_at: { label: "Joined At", type: 'datetime' }
+                }}
             />
         </>
     );

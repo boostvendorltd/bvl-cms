@@ -100,7 +100,7 @@ const CompaniesPage = () => {
 
     return (
         <>
-            <PageBreadCrumb pageTitle="Companies (Partners)" />
+            <PageBreadCrumb pageTitle="Partners" />
             <div className="space-y-6">
                 <div className="flex justify-end">
                     <TableActions
@@ -124,6 +124,23 @@ const CompaniesPage = () => {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+                fields={{
+                    name: { label: "Partner Name" },
+                    email: { label: "Email" },
+                    phone: { label: "Phone" },
+                    commission_rate: { label: "Commission Rate", formatter: (val) => (val || 0) + '%' },
+                    commission_type: { label: "Commission Type", type: 'select', options: { 'percentage': 'Percentage', 'fixed': 'Fixed Amount' } }, // Hardcoding map for now or import
+                    status: {
+                        label: "Status",
+                        type: 'select',
+                        options: {
+                            0: { label: 'Inactive' }, 1: { label: 'Active' }, 2: { label: 'Pending' }, 3: { label: 'Archived' }
+                        }
+                    },
+                    user: { type: 'ignore' }, // Don't show nested user obj
+                    created_at: { label: "Created At", type: 'datetime' },
+                    address_1: { label: "Address" }
+                }}
             />
 
             <AddPartnerModal

@@ -109,7 +109,7 @@ const AccountShopsPage = ({ params }) => {
 
     return (
         <>
-            <PageBreadCrumb pageTitle="Account Shops" />
+            <PageBreadCrumb pageTitle="Shops" />
             <div className="space-y-6">
                 <div className="flex justify-end">
                     <TableActions
@@ -131,6 +131,39 @@ const AccountShopsPage = ({ params }) => {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 data={selectedRow}
+                fields={{
+                    name: { label: "Shop Name" },
+                    type_id: { type: 'ignore' }, // Hide ID
+                    shop_type: { label: "Shop Type", formatter: (val) => val?.title || 'N/A' }, // Show Title
+                    domain: { label: "Domain", formatter: (val) => val?.url || 'N/A' },
+                    monthly_cost: { label: "Monthly Cost", formatter: (val) => val ? `$${val}` : 'N/A' },
+                    contract_status: {
+                        label: "Contract Status",
+                        type: 'select',
+                        options: { 0: 'Agreement', 1: 'Pending', 2: 'Preparing', 3: 'Cancellation' }
+                    },
+                    payment_method: {
+                        label: "Payment Method",
+                        type: 'select',
+                        options: { 0: 'Bank Transfer', 1: 'Cash', 2: 'Online Payment' }
+                    },
+                    status: {
+                        label: "Status",
+                        type: 'select',
+                        options: { 0: { label: 'Inactive' }, 1: { label: 'Active' }, 2: { label: 'Pending' }, 3: { label: 'Archived' } }
+                    },
+                    shop_representative: { label: "Representative" },
+                    email: { label: "Owner Email", formatter: (val, row) => row.user?.email || 'N/A' }, // Access nested user email if needed, or use row.email? row has email? Check logic.
+                    // Checking Shop model... it has user_id. row.user exists. Shop doesn't have email column directly? 
+                    // Wait, storeShop adds email to User, but Shop model doesn't have email?
+                    // Let's check AccountHierarchyController storeShop.
+                    // It creates User. It creates Shop.
+                    // Shop table columns? I don't see email in Shop table in storeShop.
+                    // User has email.
+                    // So we should show User's email.
+                    user: { type: 'ignore' }, // Hide raw object
+                    created_at: { label: "Registered At", type: 'datetime' }
+                }}
             />
 
             <AddShopModal
