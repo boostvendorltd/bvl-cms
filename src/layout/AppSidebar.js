@@ -7,55 +7,8 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import { BoxCubeIcon, CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PageIcon, PieChartIcon, PlugInIcon, TableIcon, UserCircleIcon } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-const navItems = [{
-  icon: <GridIcon />,
-  name: "Dashboard",
-  subItems: [{
-    name: "Ecommerce",
-    path: "/",
-    pro: false
-  }]
-}, {
-  icon: <CalenderIcon />,
-  name: "Calendar",
-  path: "/calendar"
-}, {
-  icon: <UserCircleIcon />,
-  name: "User Profile",
-  path: "/profile"
-}, {
-  icon: <UserCircleIcon />,
-  name: "Companies",
-  path: "/companies"
-}, {
-  name: "Forms",
-  icon: <ListIcon />,
-  subItems: [{
-    name: "Form Elements",
-    path: "/form-elements",
-    pro: false
-  }]
-}, {
-  name: "Tables",
-  icon: <TableIcon />,
-  subItems: [{
-    name: "Basic Tables",
-    path: "/basic-tables",
-    pro: false
-  }]
-}, {
-  name: "Pages",
-  icon: <PageIcon />,
-  subItems: [{
-    name: "Blank Page",
-    path: "/blank",
-    pro: false
-  }, {
-    name: "404 Error",
-    path: "/error-404",
-    pro: false
-  }]
-}];
+import { useSelector } from "react-redux";
+
 const othersItems = [{
   icon: <PieChartIcon />,
   name: "Charts",
@@ -109,7 +62,9 @@ const othersItems = [{
     pro: false
   }]
 }];
+
 const AppSidebar = () => {
+  const { user } = useSelector((state) => state.auth);
   const {
     isExpanded,
     isMobileOpen,
@@ -117,6 +72,117 @@ const AppSidebar = () => {
     setIsHovered
   } = useSidebar();
   const pathname = usePathname();
+
+  const navItems = React.useMemo(() => {
+    let companiesPath = "/companies";
+    let companiesLabel = "Partners"; // Default label for Root/Admin
+
+    // Debug user object to verify structure and types
+    if (user) {
+      const userRole = user.role || "";
+      const userType = user.type;
+
+      // Partner Role
+      if (userRole === 'partner' && user.partner) {
+        companiesPath = `/companies/${user.partner.id}/accounts`;
+        companiesLabel = "Accounts";
+      }
+      // Account Role
+      else if (userRole === 'account' && user.account && user.account.partner_id) {
+        companiesPath = `/companies/${user.account.partner_id}/accounts/${user.account.id}/shops`;
+        companiesLabel = "Shops";
+      }
+      // Shop Role
+      else if (userRole === 'shop' && user.shop) {
+        // Assuming structure: /companies/:partnerId/accounts/:accountId/shops/:shopId/customers
+        // We need partner_id and account_id from the shop relation
+        companiesPath = `/companies/${user.shop.partner_id}/accounts/${user.shop.account_id}/shops/${user.shop.id}/customers`;
+        companiesLabel = "Customers";
+      }
+
+      // Fallback/Legacy Type check
+      else if (Number(userType) === 2 && user.partner) {
+        companiesPath = `/companies/${user.partner.id}/accounts`;
+        companiesLabel = "Accounts";
+      } else if (Number(userType) === 3 && user.account && user.account.partner_id) {
+        companiesPath = `/companies/${user.account.partner_id}/accounts/${user.account.id}/shops`;
+        companiesLabel = "Shops";
+      } else if (Number(userType) === 5 && user.shop) {
+        companiesPath = `/companies/${user.shop.partner_id}/accounts/${user.shop.account_id}/shops/${user.shop.id}/customers`;
+        companiesLabel = "Customers";
+      }
+    }
+
+    return [{
+      icon: <GridIcon />,
+      name: "Dashboard",
+      subItems: [{
+        name: "Ecommerce",
+        path: "/",
+        pro: false
+      }]
+    }, {
+      icon: <CalenderIcon />,
+      name: "Calendar",
+      path: "/calendar"
+    }, {
+      icon: <UserCircleIcon />,
+      name: "User Profile",
+      path: "/profile"
+    }, {
+      icon: <UserCircleIcon />,
+      name: companiesLabel, // Dynamic Label
+      path: companiesPath
+    }, {
+      name: "Forms",
+      icon: <ListIcon />,
+      subItems: [{
+        name: "Form Elements",
+        path: "/form-elements",
+        pro: false
+      }]
+    }, {
+      name: "Tables",
+      icon: <TableIcon />,
+      subItems: [{
+        name: "Basic Tables",
+        path: "/basic-tables",
+        pro: false
+      }]
+    }, {
+      name: "Pages",
+      icon: <PageIcon />,
+      subItems: [{
+        name: "Blank Page",
+        path: "/blank",
+        pro: false
+      }, {
+        name: "404 Error",
+        path: "/error-404",
+        pro: false
+      }]
+    }];
+  }, [user]);
+
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+  const [subMenuHeight, setSubMenuHeight] = useState({});
+  const subMenuRefs = useRef({});
+
+  // const isActive = (path: string) => path === pathname;
+  const isActive = useCallback(path => path === pathname, [pathname]);
+
+  const handleSubmenuToggle = (index, menuType) => {
+    setOpenSubmenu(prevOpenSubmenu => {
+      if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
+        return null;
+      }
+      return {
+        type: menuType,
+        index
+      };
+    });
+  };
+
   const renderMenuItems = (navItems, menuType) => <ul className="flex flex-col gap-4">
     {navItems.map((nav, index) => <li key={nav.name}>
       {nav.subItems ? <button onClick={() => handleSubmenuToggle(index, menuType)} className={`menu-item group  ${openSubmenu?.type === menuType && openSubmenu?.index === index ? "menu-item-active" : "menu-item-inactive"} cursor-pointer ${!isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"}`}>
@@ -154,12 +220,7 @@ const AppSidebar = () => {
       </div>}
     </li>)}
   </ul>;
-  const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [subMenuHeight, setSubMenuHeight] = useState({});
-  const subMenuRefs = useRef({});
 
-  // const isActive = (path: string) => path === pathname;
-  const isActive = useCallback(path => path === pathname, [pathname]);
   useEffect(() => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
@@ -184,7 +245,8 @@ const AppSidebar = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [pathname, isActive]);
+  }, [pathname, isActive, navItems]);
+
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened
     if (openSubmenu !== null) {
@@ -197,17 +259,7 @@ const AppSidebar = () => {
       }
     }
   }, [openSubmenu]);
-  const handleSubmenuToggle = (index, menuType) => {
-    setOpenSubmenu(prevOpenSubmenu => {
-      if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
-        return null;
-      }
-      return {
-        type: menuType,
-        index
-      };
-    });
-  };
+
   return <aside className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${isExpanded || isMobileOpen ? "w-[290px]" : isHovered ? "w-[290px]" : "w-[90px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -238,7 +290,7 @@ const AppSidebar = () => {
           </div>
         </div>
       </nav>
-      {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+      {isExpanded || isMobileOpen ? <SidebarWidget /> : null}
     </div>
   </aside>;
 };
