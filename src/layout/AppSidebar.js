@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
-import { BoxCubeIcon, CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PageIcon, PieChartIcon, PlugInIcon, TableIcon, UserCircleIcon } from "../icons/index";
+import { BoxCubeIcon, CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PageIcon, PieChartIcon, PlugInIcon, TableIcon, UserCircleIcon, GroupIcon } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { useSelector } from "react-redux";
 
@@ -75,32 +75,24 @@ const AppSidebar = () => {
 
   const navItems = React.useMemo(() => {
     let companiesPath = "/companies";
-    let companiesLabel = "Partners"; // Default label for Root/Admin
+    let companiesLabel = "Partners";
 
-    // Debug user object to verify structure and types
     if (user) {
       const userRole = user.role || "";
       const userType = user.type;
 
-      // Partner Role
       if (userRole === 'partner' && user.partner) {
         companiesPath = `/companies/${user.partner.id}/accounts`;
         companiesLabel = "Accounts";
       }
-      // Account Role
       else if (userRole === 'account' && user.account && user.account.partner_id) {
         companiesPath = `/companies/${user.account.partner_id}/accounts/${user.account.id}/shops`;
         companiesLabel = "Shops";
       }
-      // Shop Role
       else if (userRole === 'shop' && user.shop) {
-        // Assuming structure: /companies/:partnerId/accounts/:accountId/shops/:shopId/customers
-        // We need partner_id and account_id from the shop relation
         companiesPath = `/companies/${user.shop.partner_id}/accounts/${user.shop.account_id}/shops/${user.shop.id}/customers`;
         companiesLabel = "Customers";
       }
-
-      // Fallback/Legacy Type check
       else if (Number(userType) === 2 && user.partner) {
         companiesPath = `/companies/${user.partner.id}/accounts`;
         companiesLabel = "Accounts";
@@ -130,8 +122,8 @@ const AppSidebar = () => {
       name: "User Profile",
       path: "/profile"
     }, {
-      icon: <UserCircleIcon />,
-      name: companiesLabel, // Dynamic Label
+      icon: <GroupIcon />,
+      name: companiesLabel,
       path: companiesPath
     }, {
       name: "Forms",
@@ -168,7 +160,6 @@ const AppSidebar = () => {
   const [subMenuHeight, setSubMenuHeight] = useState({});
   const subMenuRefs = useRef({});
 
-  // const isActive = (path: string) => path === pathname;
   const isActive = useCallback(path => path === pathname, [pathname]);
 
   const handleSubmenuToggle = (index, menuType) => {
@@ -222,7 +213,6 @@ const AppSidebar = () => {
   </ul>;
 
   useEffect(() => {
-    // Check if the current path matches any submenu item
     let submenuMatched = false;
     ["main", "others"].forEach(menuType => {
       const items = menuType === "main" ? navItems : othersItems;
@@ -241,14 +231,12 @@ const AppSidebar = () => {
       });
     });
 
-    // If no submenu item matches, close the open submenu
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
   }, [pathname, isActive, navItems]);
 
   useEffect(() => {
-    // Set the height of the submenu items when the submenu is opened
     if (openSubmenu !== null) {
       const key = `${openSubmenu.type}-${openSubmenu.index}`;
       if (subMenuRefs.current[key]) {
