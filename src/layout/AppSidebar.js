@@ -6,7 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import { BoxCubeIcon, CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PageIcon, PieChartIcon, PlugInIcon, TableIcon, UserCircleIcon, GroupIcon } from "../icons/index";
-import SidebarWidget from "./SidebarWidget";
 import { useSelector } from "react-redux";
 
 const othersItems = [{
@@ -278,7 +277,6 @@ const AppSidebar = () => {
           </div>
         </div>
       </nav>
-      {isExpanded || isMobileOpen ? <SidebarWidget /> : null}
     </div>
   </aside>;
 };
