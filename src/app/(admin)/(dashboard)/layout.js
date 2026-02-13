@@ -1,13 +1,13 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
-import AppHeader from "@/layout/AppHeader";
-import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
+import { useSidebar } from "@/(template)/context/SidebarContext";
+import AppHeader from "@/(template)/layout/AppHeader";
+import AppSidebar from "@/(template)/layout/AppSidebar";
+import Backdrop from "@/(template)/layout/Backdrop";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { fetchUserProfile } from "@/redux/features/auth-slice";
+import { fetchUserProfile } from "@/(template)/redux/features/auth-slice";
 
 export default function AdminLayout({
   children

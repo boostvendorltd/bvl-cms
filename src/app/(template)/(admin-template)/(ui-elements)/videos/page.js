@@ -1,5 +1,5 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import VideosExample from "@/components/ui/video/VideosExample";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
+import VideosExample from "@/(template)/components/ui/video/VideosExample";
 import React from "react";
 export const metadata = {
   title: "Next.js Videos | TailAdmin - Next.js Dashboard Template",

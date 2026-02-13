@@ -1,6 +1,6 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import Badge from "@/components/ui/badge/Badge";
-import { PlusIcon } from "@/icons";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
+import Badge from "@/(template)/components/ui/badge/Badge";
+import { PlusIcon } from "@/(template)/icons";
 import React from "react";
 export const metadata = {
   title: "Next.js Badge | TailAdmin - Next.js Dashboard Template",

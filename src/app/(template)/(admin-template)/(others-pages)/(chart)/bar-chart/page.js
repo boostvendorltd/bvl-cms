@@ -1,6 +1,6 @@
-import BarChartOne from "@/components/charts/bar/BarChartOne";
-import ComponentCard from "@/components/common/ComponentCard";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import BarChartOne from "@/(template)/components/charts/bar/BarChartOne";
+import ComponentCard from "@/(template)/components/common/ComponentCard";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
 import React from "react";
 
 export const metadata = {

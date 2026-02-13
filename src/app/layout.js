@@ -1,8 +1,8 @@
 import { Outfit } from 'next/font/google';
 import './globals.css';
-import { SidebarProvider } from '@/context/SidebarContext';
-import { ThemeProvider } from '@/context/ThemeContext';
-import { Providers } from '@/redux/provider';
+import { SidebarProvider } from '@/(template)/context/SidebarContext';
+import { ThemeProvider } from '@/(template)/context/ThemeContext';
+import { Providers } from '@/(template)/redux/provider';
 
 const outfit = Outfit({
   subsets: ["latin"]

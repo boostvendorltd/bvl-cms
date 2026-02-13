@@ -1,6 +1,6 @@
-import ComponentCard from "@/components/common/ComponentCard";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import Alert from "@/components/ui/alert/Alert";
+import ComponentCard from "@/(template)/components/common/ComponentCard";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
+import Alert from "@/(template)/components/ui/alert/Alert";
 import React from "react";
 export const metadata = {
   title: "Next.js Alerts | TailAdmin - Next.js Dashboard Template",

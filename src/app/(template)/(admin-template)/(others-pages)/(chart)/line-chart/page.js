@@ -1,6 +1,6 @@
-import LineChartOne from "@/components/charts/line/LineChartOne";
-import ComponentCard from "@/components/common/ComponentCard";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import LineChartOne from "@/(template)/components/charts/line/LineChartOne";
+import ComponentCard from "@/(template)/components/common/ComponentCard";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
 import React from "react";
 export const metadata = {
   title: "Next.js Line Chart | TailAdmin - Next.js Dashboard Template",

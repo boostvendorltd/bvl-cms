@@ -1,14 +1,14 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import CheckboxComponents from "@/components/form/form-elements/CheckboxComponents";
-import DefaultInputs from "@/components/form/form-elements/DefaultInputs";
-import DropzoneComponent from "@/components/form/form-elements/DropZone";
-import FileInputExample from "@/components/form/form-elements/FileInputExample";
-import InputGroup from "@/components/form/form-elements/InputGroup";
-import InputStates from "@/components/form/form-elements/InputStates";
-import RadioButtons from "@/components/form/form-elements/RadioButtons";
-import SelectInputs from "@/components/form/form-elements/SelectInputs";
-import TextAreaInput from "@/components/form/form-elements/TextAreaInput";
-import ToggleSwitch from "@/components/form/form-elements/ToggleSwitch";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
+import CheckboxComponents from "@/(template)/components/form/form-elements/CheckboxComponents";
+import DefaultInputs from "@/(template)/components/form/form-elements/DefaultInputs";
+import DropzoneComponent from "@/(template)/components/form/form-elements/DropZone";
+import FileInputExample from "@/(template)/components/form/form-elements/FileInputExample";
+import InputGroup from "@/(template)/components/form/form-elements/InputGroup";
+import InputStates from "@/(template)/components/form/form-elements/InputStates";
+import RadioButtons from "@/(template)/components/form/form-elements/RadioButtons";
+import SelectInputs from "@/(template)/components/form/form-elements/SelectInputs";
+import TextAreaInput from "@/(template)/components/form/form-elements/TextAreaInput";
+import ToggleSwitch from "@/(template)/components/form/form-elements/ToggleSwitch";
 import React from "react";
 export const metadata = {
   title: "Next.js Form Elements | TailAdmin - Next.js Dashboard Template",

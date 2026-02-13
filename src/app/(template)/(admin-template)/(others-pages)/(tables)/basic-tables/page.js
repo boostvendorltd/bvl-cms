@@ -1,6 +1,6 @@
-import ComponentCard from "@/components/common/ComponentCard";
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import BasicTableOne from "@/components/tables/BasicTableOne";
+import ComponentCard from "@/(template)/components/common/ComponentCard";
+import PageBreadcrumb from "@/(template)/components/common/PageBreadCrumb";
+import BasicTableOne from "@/(template)/components/tables/BasicTableOne";
 import React from "react";
 export const metadata = {
   title: "Next.js Basic Table | TailAdmin - Next.js Dashboard Template",
