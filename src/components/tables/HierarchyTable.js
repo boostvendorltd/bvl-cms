@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/(template)/components/ui/table";
-import Badge from "@/(template)/components/ui/badge/Badge";
-import Pagination from "@/(template)/components/tables/Pagination";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import Badge from "@/components/ui/badge/Badge";
+import Pagination from "@/components/tables/Pagination";
 import Link from "next/link";
 
 export default function HierarchyTable({

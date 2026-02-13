@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateProfile } from "@/(template)/redux/features/auth-slice";
-import { useModal } from "@/(template)/hooks/useModal";
-import { Modal } from "@/(template)/components/ui/modal";
-import Button from "@/(template)/components/ui/button/Button";
-import Input from "@/(template)/components/form/input/InputField";
-import Label from "@/(template)/components/form/Label";
+import { updateProfile } from "@/redux/features/auth-slice";
+import { useModal } from "@/hooks/useModal";
+import { Modal } from "@/components/ui/modal";
+import Button from "@/components/ui/button/Button";
+import Input from "@/components/form/input/InputField";
+import Label from "@/components/form/Label";
 
 export default function UserInfoCard() {
   const { user } = useSelector((state) => state.auth);

@@ -1,11 +1,11 @@
 "use client";
-import PageBreadCrumb from "@/(template)/components/common/PageBreadCrumb";
+import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
-import QuickEditModal from "@/(template)/components/ui/modal/QuickEditModal";
-import AddAccountModal from "@/(template)/components/ui/modal/AddAccountModal";
-import TableActions from "@/(template)/components/tables/TableActions";
+import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import AddAccountModal from "@/components/ui/modal/AddAccountModal";
+import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
-import axios from "@/(template)/utils/api";
+import axios from "@/utils/api";
 import { useRouter } from "next/navigation";
 
 const PartnerAccountsPage = ({ params }) => {
