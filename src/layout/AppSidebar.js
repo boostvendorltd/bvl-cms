@@ -113,6 +113,22 @@ const AppSidebar = () => {
         pro: false
       }]
     }, {
+      icon: <BoxCubeIcon />, // Using box icon for products
+      name: "Products",
+      subItems: [{
+        name: "All Products",
+        path: "/products",
+        pro: false
+      }, {
+        name: "Attributes",
+        path: "/attributes",
+        pro: false
+      }, {
+        name: "Categories",
+        path: "/categories",
+        pro: false
+      }]
+    }, {
       icon: <GroupIcon />,
       name: companiesLabel,
       path: companiesPath
