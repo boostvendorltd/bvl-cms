@@ -19,12 +19,37 @@ const initialState = {
 
 export const fetchPartners = createAsyncThunk(
     "hierarchy/fetchPartners",
-    async ({ page = 1, limit = 10 } = {}, { rejectWithValue }) => {
+    async ({ page = 1, limit = 10, search = '', status = '' } = {}, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/cms/partners?page=${page}&limit=${limit}`);
+            const query = new URLSearchParams({ page, limit, search, status }).toString();
+            const response = await api.get(`/cms/partners?${query}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch partners");
+        }
+    }
+);
+
+export const bulkDeletePartners = createAsyncThunk(
+    "hierarchy/bulkDeletePartners",
+    async (ids, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/partners/bulk-delete", { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to delete partners");
+        }
+    }
+);
+
+export const bulkUpdatePartnerStatus = createAsyncThunk(
+    "hierarchy/bulkUpdatePartnerStatus",
+    async ({ ids, status }, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/partners/bulk-status", { ids, status });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update partners status");
         }
     }
 );
@@ -69,12 +94,37 @@ export const togglePartnerStatus = createAsyncThunk(
 
 export const fetchPartnerAccounts = createAsyncThunk(
     "hierarchy/fetchPartnerAccounts",
-    async ({ partnerId, page = 1, limit = 10 }, { rejectWithValue }) => {
+    async ({ partnerId, page = 1, limit = 10, search = '', status = '' }, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/cms/partners/${partnerId}/accounts?page=${page}&limit=${limit}`);
+            const query = new URLSearchParams({ page, limit, search, status }).toString();
+            const response = await api.get(`/cms/partners/${partnerId}/accounts?${query}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch accounts");
+        }
+    }
+);
+
+export const bulkDeleteAccounts = createAsyncThunk(
+    "hierarchy/bulkDeleteAccounts",
+    async ({ partnerId, ids }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/partners/${partnerId}/accounts/bulk-delete`, { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to delete accounts");
+        }
+    }
+);
+
+export const bulkUpdateAccountStatus = createAsyncThunk(
+    "hierarchy/bulkUpdateAccountStatus",
+    async ({ partnerId, ids, status }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/partners/${partnerId}/accounts/bulk-status`, { ids, status });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update accounts status");
         }
     }
 );
@@ -131,12 +181,37 @@ export const toggleAccountStatus = createAsyncThunk(
 
 export const fetchAccountShops = createAsyncThunk(
     "hierarchy/fetchAccountShops",
-    async ({ accountId, page = 1, limit = 10 }, { rejectWithValue }) => {
+    async ({ accountId, page = 1, limit = 10, search = '', status = '' }, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/cms/accounts/${accountId}/shops?page=${page}&limit=${limit}`);
+            const query = new URLSearchParams({ page, limit, search, status }).toString();
+            const response = await api.get(`/cms/accounts/${accountId}/shops?${query}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch shops");
+        }
+    }
+);
+
+export const bulkDeleteShops = createAsyncThunk(
+    "hierarchy/bulkDeleteShops",
+    async ({ accountId, ids }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/accounts/${accountId}/shops/bulk-delete`, { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to delete shops");
+        }
+    }
+);
+
+export const bulkUpdateShopStatus = createAsyncThunk(
+    "hierarchy/bulkUpdateShopStatus",
+    async ({ accountId, ids, status }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/accounts/${accountId}/shops/bulk-status`, { ids, status });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update shops status");
         }
     }
 );
