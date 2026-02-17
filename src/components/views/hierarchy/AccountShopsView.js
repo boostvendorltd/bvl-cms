@@ -157,10 +157,22 @@ const AccountShopsView = ({ accountId, partnerId }) => {
 
     const handleSaveShop = async (id, formData) => {
         try {
-            const dataToSubmit = {
-                ...formData,
-                email: selectedRow?.user?.email
-            };
+            const dataToSubmit = new FormData();
+
+            // Append all fields to FormData
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== null && formData[key] !== undefined) {
+                    dataToSubmit.append(key, formData[key]);
+                }
+            });
+
+            // Add email which might be missing in some roles
+            if (!formData.email && selectedRow?.user?.email) {
+                dataToSubmit.append('email', selectedRow.user.email);
+            }
+
+            // Standard Laravel way to handle PUT with files: POST + _method override
+            dataToSubmit.append('_method', 'PUT');
 
             await toast.promise(
                 dispatch(updateShop({ id, data: dataToSubmit })).unwrap(),
@@ -278,6 +290,28 @@ const AccountShopsView = ({ accountId, partnerId }) => {
 
     const columns = [
         { header: "ID", accessor: "id" },
+        {
+            header: "Logo",
+            accessor: "profile",
+            render: (profile) => (
+                <img
+                    src={profile?.logo || "/images/default.jpg"}
+                    alt="Logo"
+                    className="w-10 h-10 rounded-full object-cover border border-gray-100"
+                />
+            )
+        },
+        {
+            header: "Banner",
+            accessor: "profile",
+            render: (profile) => (
+                <img
+                    src={profile?.banner || "/images/default.jpg"}
+                    alt="Banner"
+                    className="w-20 h-10 rounded-lg object-cover border border-gray-100"
+                />
+            )
+        },
         {
             header: "Shop Name",
             accessor: "name",
@@ -466,6 +500,9 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                     title="Edit Shop"
                     fields={canEditFull ? {
                         // Full fields for Root/Admin
+                        logo: { label: "Shop Logo", type: "file" },
+                        banner: { label: "Shop Banner", type: "file" },
+                        branding_section: { label: "Shop Branding & Info", type: "section" },
                         name: { label: "Shop Name", type: "text" },
                         phone: { label: "Phone", type: "text" },
                         address_1: { label: "Address 1", type: "text" },
@@ -494,17 +531,22 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                         },
                         slogan: { label: "Slogan", type: "text" },
                         description: { label: "Description", type: "textarea" },
+                        social_section: { label: "Social Links", type: "section" },
                         fb_link: { label: "Facebook Link", type: "text" },
                         youtube_link: { label: "YouTube Link", type: "text" },
                         instagram_link: { label: "Instagram Link", type: "text" },
                         twitter_link: { label: "Twitter Link", type: "text" },
                         tiktok_link: { label: "TikTok Link", type: "text" },
+                        seo_section: { label: "SEO & Meta Info", type: "section" },
                         meta_title: { label: "Meta Title", type: "text" },
                         meta_description: { label: "Meta Description", type: "textarea" },
                         meta_keywords: { label: "Meta Keywords", type: "text" },
                         note: { label: "Note", type: "textarea" },
                     } : {
                         // Limited fields for Account role
+                        logo: { label: "Shop Logo", type: "file" },
+                        banner: { label: "Shop Banner", type: "file" },
+                        branding_section: { label: "Shop Branding & Info", type: "section" },
                         name: { label: "Shop Name", type: "text" },
                         phone: { label: "Phone", type: "text" },
                         address_1: { label: "Address 1", type: "text" },
@@ -513,14 +555,16 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                         country_info: { label: "Country Info", type: "text" },
                         slogan: { label: "Slogan", type: "text" },
                         description: { label: "Description", type: "textarea" },
+                        social_section: { label: "Social Links", type: "section" },
                         fb_link: { label: "Facebook Link", type: "text" },
                         youtube_link: { label: "YouTube Link", type: "text" },
                         instagram_link: { label: "Instagram Link", type: "text" },
                         twitter_link: { label: "Twitter Link", type: "text" },
                         tiktok_link: { label: "TikTok Link", type: "text" },
+                        seo_section: { label: "SEO & Meta Info", type: "section" },
                         meta_title: { label: "Meta Title", type: "text" },
-                        meta_description: { label: "Meta Description", type: "textarea" },
                         meta_keywords: { label: "Meta Keywords", type: "text" },
+                        meta_description: { label: "Meta Description", type: "textarea" },
                         note: { label: "Note", type: "textarea" },
                     }}
                 />

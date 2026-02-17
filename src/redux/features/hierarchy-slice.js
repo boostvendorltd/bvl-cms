@@ -232,7 +232,7 @@ export const updateShop = createAsyncThunk(
     "hierarchy/updateShop",
     async ({ id, data }, { rejectWithValue }) => {
         try {
-            const response = await api.put(`/cms/shops/${id}`, data);
+            const response = await api.post(`/cms/shops/${id}`, data);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to update shop");

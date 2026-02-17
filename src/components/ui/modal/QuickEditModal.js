@@ -123,6 +123,14 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
             );
         }
 
+        if (type === 'section') {
+            return (
+                <div key={key} className="col-span-1 md:col-span-2 pt-4 pb-2 border-b border-gray-100 mb-2">
+                    <h4 className="text-lg font-semibold text-gray-900">{label}</h4>
+                </div>
+            );
+        }
+
         return (
             <div key={key}>
                 <label className="block text-sm font-medium text-gray-700">{label}</label>
