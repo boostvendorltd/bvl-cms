@@ -53,7 +53,7 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await onSave(data.id, formData);
+            await onSave(data?.id, formData);
             onClose();
         } catch (error) {
             console.error("Save failed", error);
@@ -89,15 +89,36 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
 
         if (type === 'textarea') {
             return (
-                <div key={key}>
+                <div key={key} className="col-span-1 md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700">{label}</label>
                     <textarea
                         name={key}
                         value={value}
                         onChange={handleChange}
-                        rows={3}
+                        rows={5}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                     />
+                </div>
+            );
+        }
+
+        if (type === 'file') {
+            return (
+                <div key={key}>
+                    <label className="block text-sm font-medium text-gray-700">{label}</label>
+                    <input
+                        type="file"
+                        name={key}
+                        onChange={(e) => setFormData({ ...formData, [key]: e.target.files[0] })}
+                        accept="image/*"
+                        className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    />
+                    {/* Show existing image if available and no new file selected */}
+                    {!formData[key] && data?.[key] && typeof data[key] === 'string' && (
+                        <div className="mt-2 text-xs text-gray-500">
+                            Current: {data[key].split('/').pop()}
+                        </div>
+                    )}
                 </div>
             );
         }

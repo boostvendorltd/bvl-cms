@@ -11,7 +11,11 @@ export default function HierarchyTable({
     pagination,
     onPageChange,
     onRowClick,
-    onIdClick
+    onIdClick,
+    selectable = false,
+    selectedIds = [],
+    onSelect,
+    onSelectAll
 }) {
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03] w-full max-w-full">
@@ -20,6 +24,16 @@ export default function HierarchyTable({
                     <Table>
                         <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                             <TableRow>
+                                {selectable && (
+                                    <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start w-12">
+                                        <input
+                                            type="checkbox"
+                                            checked={data.length > 0 && selectedIds.length === data.length}
+                                            onChange={(e) => onSelectAll(e.target.checked)}
+                                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                        />
+                                    </TableCell>
+                                )}
                                 {columns.map((col, index) => (
                                     <TableCell
                                         key={index}
@@ -35,6 +49,16 @@ export default function HierarchyTable({
                         <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                             {data.map((row, rowIndex) => (
                                 <TableRow key={row.id || rowIndex}>
+                                    {selectable && (
+                                        <TableCell className="px-5 py-4 sm:px-6 w-12">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(row.id)}
+                                                onChange={() => onSelect(row.id)}
+                                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                            />
+                                        </TableCell>
+                                    )}
                                     {columns.map((col, colIndex) => {
                                         const value = row[col.accessor];
 

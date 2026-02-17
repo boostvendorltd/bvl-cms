@@ -105,7 +105,14 @@ export const updateCategory = createAsyncThunk(
     'product/updateCategory',
     async ({ id, data }, { rejectWithValue }) => {
         try {
-            const response = await api.put(`/cms/categories/${id}`, data);
+            let response;
+            // Handle FormData (e.g. file uploads) for Laravel by using POST with _method: PUT
+            if (data instanceof FormData) {
+                data.append('_method', 'PUT');
+                response = await api.post(`/cms/categories/${id}`, data);
+            } else {
+                response = await api.put(`/cms/categories/${id}`, data);
+            }
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);
@@ -192,6 +199,58 @@ export const duplicateProduct = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const response = await api.post(`/cms/products/${id}/duplicate`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
+// Bulk Delete Categories
+export const bulkDeleteCategories = createAsyncThunk(
+    "product/bulkDeleteCategories",
+    async (ids, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/categories/bulk-delete", { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
+// Bulk Delete Attributes
+export const bulkDeleteAttributes = createAsyncThunk(
+    "product/bulkDeleteAttributes",
+    async (ids, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/attributes/bulk-delete", { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
+// Bulk Delete Products
+export const bulkDeleteProducts = createAsyncThunk(
+    "product/bulkDeleteProducts",
+    async (ids, { rejectWithValue }) => {
+        try {
+            const response = await api.post("/cms/products/bulk-delete", { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data);
+        }
+    }
+);
+
+// Bulk Delete Variants
+export const bulkDeleteVariants = createAsyncThunk(
+    "product/bulkDeleteVariants",
+    async ({ productId, ids }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/products/${productId}/variants/bulk-delete`, { ids });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data);

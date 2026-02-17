@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAttributes, createAttribute, updateAttribute, deleteAttribute, addAttributeValue, deleteAttributeValue } from "@/redux/features/product-slice";
+import {
+    fetchAttributes, createAttribute, updateAttribute, deleteAttribute, addAttributeValue, deleteAttributeValue,
+    bulkDeleteAttributes
+} from "@/redux/features/product-slice";
+import { getShopId } from "@/utils/auth";
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
 import TableActions from "@/components/tables/TableActions";
@@ -142,7 +146,15 @@ const AttributesPage = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isValueModalOpen, setIsValueModalOpen] = useState(false);
     const [selectedAttribute, setSelectedAttribute] = useState(null);
-    const [confirmModal, setConfirmModal] = useState({ isOpen: false, data: null });
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        data: null,
+        title: "",
+        message: ""
+    });
+
+    // Bulk Selection State
+    const [selectedIds, setSelectedIds] = useState([]);
 
     useEffect(() => {
         dispatch(fetchAttributes());
@@ -215,6 +227,49 @@ const AttributesPage = () => {
     // Helper to get fresh attribute data for the modal
     const activeAttributeForModal = attributes.find(a => a.id === selectedAttribute?.id) || selectedAttribute;
 
+    // --- Bulk Selection Handlers ---
+
+    const toggleSelect = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+        );
+    };
+
+    const toggleSelectAll = (isChecked) => {
+        if (isChecked) {
+            setSelectedIds(attributes.map((attr) => attr.id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+
+        // Show confirmation before deleting
+        if (!confirm('Are you sure you want to delete ' + selectedIds.length + ' attributes?')) return;
+
+        try {
+            await toast.promise(
+                dispatch(bulkDeleteAttributes(selectedIds)).unwrap(),
+                {
+                    loading: 'Deleting attributes...',
+                    success: 'Attributes deleted successfully',
+                    error: (err) => `Error: ${err.message || err.message}`
+                }
+            );
+            setSelectedIds([]);
+            dispatch(fetchAttributes()); // Re-fetch attributes after bulk delete
+        } catch (error) {
+            // handled by toast
+        }
+    };
+
+    const openAddModal = () => {
+        setSelectedAttribute(null); // Clear any previously selected attribute
+        setIsAddModalOpen(true);
+    };
+
     const columns = [
         { header: "Name", accessor: "name" },
         { header: "Type", accessor: "type", render: (val) => <span className="capitalize">{val}</span> },
@@ -269,9 +324,22 @@ const AttributesPage = () => {
         <>
             <PageBreadCrumb pageTitle="Attributes" />
             <div className="space-y-6">
-                <div className="flex justify-end">
+                <br />
+                <div className="flex items-center gap-3 mb-6">
+                    {selectedIds.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
+                            <button
+                                onClick={handleBulkDelete}
+                                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
+                            >
+                                <TrashIcon className="w-4 h-4" />
+                                Delete
+                            </button>
+                        </div>
+                    )}
                     <TableActions
-                        onAdd={() => setIsAddModalOpen(true)}
+                        onAdd={() => openAddModal()}
                         addButtonText="Add Attribute"
                         hideSearch={true} // Simple list for now
                         hideFilter={true}
@@ -281,7 +349,11 @@ const AttributesPage = () => {
                     columns={columns}
                     data={attributes}
                     isLoading={loading}
-                    pagination={null} // All fetched at once for now
+                    pagination={null}
+                    selectable={true}
+                    selectedIds={selectedIds}
+                    onSelect={toggleSelect}
+                    onSelectAll={toggleSelectAll}
                 />
             </div>
 

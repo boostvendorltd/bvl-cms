@@ -11,6 +11,7 @@ import {
     deleteProduct,
     duplicateProduct,
     bulkUpdateProductStatus,
+    bulkDeleteProducts
 } from "@/redux/features/product-slice";
 import {
     PencilSquareIcon,
@@ -110,6 +111,27 @@ const ProductsPage = () => {
         }
     };
 
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+
+        if (!confirm('Are you sure you want to delete ' + selectedIds.length + ' products?')) return;
+
+        try {
+            await toast.promise(
+                dispatch(bulkDeleteProducts(selectedIds)).unwrap(),
+                {
+                    loading: 'Deleting products...',
+                    success: 'Products deleted successfully',
+                    error: (err) => `Error: ${err.message || err}`
+                }
+            );
+            setSelectedIds([]);
+            loadProducts();
+        } catch (error) {
+            // handled by toast
+        }
+    };
+
     const toggleSelect = (id) => {
         setSelectedIds((prev) =>
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
@@ -186,6 +208,13 @@ const ProductsPage = () => {
                                     className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                                 >
                                     Deactivate
+                                </button>
+                                <button
+                                    onClick={handleBulkDelete}
+                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
+                                >
+                                    <TrashIcon className="w-4 h-4" />
+                                    Delete
                                 </button>
                             </div>
                         )}
