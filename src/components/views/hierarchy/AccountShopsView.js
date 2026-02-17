@@ -471,7 +471,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                             </div>
                         )}
                         <TableActions
-                            onAdd={() => setIsAddModalOpen(true)}
+                            onAdd={(isRoot || isAdmin) ? () => setIsAddModalOpen(true) : null}
                             onDownload={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/shops/${accountId}`, '_blank')}
                             addButtonText="Add Shop"
                         />
