@@ -81,25 +81,25 @@ const AppSidebar = () => {
       const userType = user.type;
 
       if (userRole === 'partner' && user.partner) {
-        companiesPath = `/companies/${user.partner.id}/accounts`;
+        companiesPath = `/accounts`;
         companiesLabel = "Accounts";
       }
-      else if (userRole === 'account' && user.account && user.account.partner_id) {
-        companiesPath = `/companies/${user.account.partner_id}/accounts/${user.account.id}/shops`;
+      else if (userRole === 'account' && user.account) {
+        companiesPath = `/shops`;
         companiesLabel = "Shops";
       }
       else if (userRole === 'shop' && user.shop) {
-        companiesPath = `/companies/${user.shop.partner_id}/accounts/${user.shop.account_id}/shops/${user.shop.id}/customers`;
+        companiesPath = `/customers`;
         companiesLabel = "Customers";
       }
       else if (Number(userType) === 2 && user.partner) {
-        companiesPath = `/companies/${user.partner.id}/accounts`;
+        companiesPath = `/accounts`;
         companiesLabel = "Accounts";
-      } else if (Number(userType) === 3 && user.account && user.account.partner_id) {
-        companiesPath = `/companies/${user.account.partner_id}/accounts/${user.account.id}/shops`;
+      } else if (Number(userType) === 3 && user.account) {
+        companiesPath = `/shops`;
         companiesLabel = "Shops";
       } else if (Number(userType) === 5 && user.shop) {
-        companiesPath = `/companies/${user.shop.partner_id}/accounts/${user.shop.account_id}/shops/${user.shop.id}/customers`;
+        companiesPath = `/customers`;
         companiesLabel = "Customers";
       }
     }

@@ -54,7 +54,7 @@ export default function HierarchyTable({
                                             <input
                                                 type="checkbox"
                                                 checked={selectedIds.includes(row.id)}
-                                                onChange={() => onSelect(row.id)}
+                                                onChange={(e) => onSelect(row.id, e.target.checked)}
                                                 className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                             />
                                         </TableCell>
@@ -66,12 +66,16 @@ export default function HierarchyTable({
                                         if (colIndex === 0) {
                                             return (
                                                 <TableCell key={colIndex} className="px-5 py-4 sm:px-6 text-start text-theme-sm">
-                                                    <button
-                                                        onClick={() => onIdClick && onIdClick(row)}
-                                                        className="text-brand-500 hover:text-brand-600 underline"
-                                                    >
-                                                        #{value}
-                                                    </button>
+                                                    {onIdClick ? (
+                                                        <button
+                                                            onClick={() => onIdClick(row)}
+                                                            className="text-brand-500 hover:text-brand-600 underline cursor-pointer"
+                                                        >
+                                                            #{value}
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-gray-700 dark:text-gray-300">#{value}</span>
+                                                    )}
                                                 </TableCell>
                                             );
                                         }
