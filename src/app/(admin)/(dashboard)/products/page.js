@@ -21,6 +21,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 const STATUS_MAP = {
     0: { label: "Inactive", color: "bg-gray-100 text-gray-700" },
@@ -58,21 +59,54 @@ const ProductsPage = () => {
 
     const handleDelete = async () => {
         if (!deleteTarget) return;
-        await dispatch(deleteProduct(deleteTarget.id));
-        setDeleteTarget(null);
-        loadProducts();
+        try {
+            await toast.promise(
+                dispatch(deleteProduct(deleteTarget.id)).unwrap(),
+                {
+                    loading: 'Deleting...',
+                    success: 'Product deleted successfully',
+                    error: (err) => `Error: ${err.message || err}`
+                }
+            );
+            setDeleteTarget(null);
+            loadProducts();
+        } catch (error) {
+            // handled by toast
+        }
     };
 
     const handleDuplicate = async (id) => {
-        await dispatch(duplicateProduct(id));
-        loadProducts();
+        try {
+            await toast.promise(
+                dispatch(duplicateProduct(id)).unwrap(),
+                {
+                    loading: 'Duplicating...',
+                    success: 'Product duplicated successfully',
+                    error: (err) => `Error: ${err.message || err}`
+                }
+            );
+            loadProducts();
+        } catch (error) {
+            // handled by toast
+        }
     };
 
     const handleBulkStatus = async (status) => {
         if (selectedIds.length === 0) return;
-        await dispatch(bulkUpdateProductStatus({ product_ids: selectedIds, status }));
-        setSelectedIds([]);
-        loadProducts();
+        try {
+            await toast.promise(
+                dispatch(bulkUpdateProductStatus({ product_ids: selectedIds, status })).unwrap(),
+                {
+                    loading: 'Updating status...',
+                    success: 'Products status updated',
+                    error: (err) => `Error: ${err.message || err}`
+                }
+            );
+            setSelectedIds([]);
+            loadProducts();
+        } catch (error) {
+            // handled by toast
+        }
     };
 
     const toggleSelect = (id) => {
@@ -322,7 +356,7 @@ const ProductsPage = () => {
                 message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
                 confirmText="Delete"
                 onConfirm={handleDelete}
-                onCancel={() => setDeleteTarget(null)}
+                onClose={() => setDeleteTarget(null)}
             />
         </>
     );

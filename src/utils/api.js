@@ -25,6 +25,11 @@ api.interceptors.request.use(
 
         if (typeof window !== "undefined") {
             config.headers["X-Domain"] = window.location.hostname;
+
+            const shopId = localStorage.getItem("current_shop_id");
+            if (shopId) {
+                config.headers["X-Shop-ID"] = shopId;
+            }
         }
 
         const getCookie = (name) => {

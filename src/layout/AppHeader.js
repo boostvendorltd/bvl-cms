@@ -4,6 +4,7 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
+import ShopSelector from "@/components/common/ShopSelector";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
@@ -76,6 +77,11 @@ const AppHeader = () => {
               </button>
             </div>
           </form>
+        </div>
+
+        {/* Shop Selector */}
+        <div className="hidden lg:block ml-4">
+          <ShopSelector />
         </div>
       </div>
       <div className={`${isApplicationMenuOpen ? "flex" : "hidden"} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}>

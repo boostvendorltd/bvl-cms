@@ -18,7 +18,6 @@ import {
     generateVariants,
     bulkUpdateVariants,
     deleteVariant,
-    updateDefaultVariant,
 } from "@/redux/features/product-slice";
 import {
     PhotoIcon,
@@ -31,6 +30,7 @@ import {
     BoltIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
+import toast from "react-hot-toast";
 
 const TABS = [
     { id: "general", label: "General" },
@@ -49,7 +49,6 @@ const ProductEditorPage = () => {
 
     const [activeTab, setActiveTab] = useState("general");
     const [saving, setSaving] = useState(false);
-    const [toast, setToast] = useState(null);
 
     // --- Form State ---
     const [form, setForm] = useState({
@@ -99,10 +98,7 @@ const ProductEditorPage = () => {
         }
     }, [currentProduct, isEdit]);
 
-    const showToast = (msg, type = "success") => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 3000);
-    };
+
 
     const handleChange = (field, value) => {
         setForm((prev) => ({ ...prev, [field]: value }));
@@ -129,7 +125,7 @@ const ProductEditorPage = () => {
     // --- Save ---
     const handleSave = async () => {
         if (!form.name.trim()) {
-            showToast("Product name is required.", "error");
+            toast.error("Product name is required.");
             setActiveTab("general");
             return;
         }
@@ -137,14 +133,14 @@ const ProductEditorPage = () => {
         try {
             if (isEdit) {
                 await dispatch(updateProduct({ id: productId, data: form })).unwrap();
-                showToast("Product updated!");
+                toast.success("Product updated!");
             } else {
                 const result = await dispatch(createProduct(form)).unwrap();
-                showToast("Product created!");
+                toast.success("Product created!");
                 router.push(`/products/${result.id}`);
             }
         } catch (err) {
-            showToast(err?.message || "Failed to save product.", "error");
+            toast.error(err?.message || "Failed to save product.");
         }
         setSaving(false);
     };
@@ -161,30 +157,42 @@ const ProductEditorPage = () => {
         try {
             await dispatch(uploadProductImages({ id: productId, formData })).unwrap();
             dispatch(fetchProduct(productId));
-            showToast("Images uploaded!");
+            toast.success("Images uploaded!");
         } catch (err) {
-            showToast("Failed to upload images.", "error");
+            toast.error("Failed to upload images.");
         }
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
-    const handleDeleteImage = async (imageId) => {
+    const handleDeleteImage = (imageId) => {
+        setDeleteImageTarget(imageId);
+    };
+
+    const confirmDeleteImage = async () => {
+        if (!deleteImageTarget) return;
         try {
-            await dispatch(deleteProductImage({ productId, imageId })).unwrap();
+            await toast.promise(
+                dispatch(deleteProductImage({ productId, imageId: deleteImageTarget })).unwrap(),
+                {
+                    loading: 'Deleting image...',
+                    success: 'Image deleted.',
+                    error: (err) => `Error: ${err.message || 'Failed to delete'}`
+                }
+            );
             dispatch(fetchProduct(productId));
-            showToast("Image deleted.");
         } catch (err) {
-            showToast("Failed to delete image.", "error");
+            // handled by toast
         }
+        setDeleteImageTarget(null);
     };
 
     const handleSetPrimary = async (imageId) => {
         try {
             await dispatch(setPrimaryImage({ productId, imageId })).unwrap();
             dispatch(fetchProduct(productId));
-            showToast("Primary image updated.");
+            toast.success("Primary image updated.");
         } catch (err) {
-            showToast("Failed to update primary image.", "error");
+            toast.error("Failed to update primary image.");
         }
     };
 
@@ -198,6 +206,7 @@ const ProductEditorPage = () => {
     const [genDefaults, setGenDefaults] = useState({ price: "", quantity: 0 });
     const [variantEdits, setVariantEdits] = useState({});
     const [deleteVariantTarget, setDeleteVariantTarget] = useState(null);
+    const [deleteImageTarget, setDeleteImageTarget] = useState(null);
 
     const availableAttributes = attributes.filter((a) => form.attribute_ids.includes(a.id) && a.values?.length > 0);
 
@@ -222,7 +231,7 @@ const ProductEditorPage = () => {
             }));
 
         if (attrData.length === 0) {
-            showToast("Select at least one attribute value.", "error");
+            toast.error("Select at least one attribute value.");
             return;
         }
 
@@ -239,12 +248,12 @@ const ProductEditorPage = () => {
                     },
                 })
             ).unwrap();
-            showToast(result.message);
+            toast.success(result.message);
             setVariantGenOpen(false);
             setSelectedGenAttrs({});
             dispatch(fetchProduct(productId));
         } catch (err) {
-            showToast("Variant generation failed.", "error");
+            toast.error("Variant generation failed.");
         }
     };
 
@@ -258,17 +267,17 @@ const ProductEditorPage = () => {
     const handleSaveVariants = async () => {
         const edits = Object.entries(variantEdits);
         if (edits.length === 0) {
-            showToast("No changes to save.", "error");
+            toast.error("No changes to save.");
             return;
         }
         const variants = edits.map(([id, fields]) => ({ id: parseInt(id), ...fields }));
         try {
             await dispatch(bulkUpdateVariants({ id: productId, data: { variants } })).unwrap();
             setVariantEdits({});
-            showToast("Variants updated!");
+            toast.success("Variants updated!");
             dispatch(fetchProduct(productId));
         } catch (err) {
-            showToast("Failed to update variants.", "error");
+            toast.error("Failed to update variants.");
         }
     };
 
@@ -277,10 +286,10 @@ const ProductEditorPage = () => {
         try {
             await dispatch(deleteVariant({ productId, variantId: deleteVariantTarget.id })).unwrap();
             setDeleteVariantTarget(null);
-            showToast("Variant deleted.");
+            toast.success("Variant deleted.");
             dispatch(fetchProduct(productId));
         } catch (err) {
-            showToast(err?.message || "Cannot delete variant.", "error");
+            toast.error(err?.message || "Cannot delete variant.");
             setDeleteVariantTarget(null);
         }
     };
@@ -302,15 +311,7 @@ const ProductEditorPage = () => {
             <PageBreadCrumb pageTitle={isEdit ? "Edit Product" : "Create Product"} />
 
             {/* Toast */}
-            {toast && (
-                <div
-                    className={`fixed top-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium transition-all ${toast.type === "error" ? "bg-red-600 text-white" : "bg-emerald-600 text-white"
-                        }`}
-                >
-                    {toast.type === "error" ? <XMarkIcon className="w-4 h-4" /> : <CheckCircleIcon className="w-4 h-4" />}
-                    {toast.msg}
-                </div>
-            )}
+
 
             <div className="space-y-5">
                 {/* Top Bar */}
@@ -350,10 +351,10 @@ const ProductEditorPage = () => {
                                     onClick={() => !disabled && setActiveTab(tab.id)}
                                     disabled={disabled}
                                     className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                                            ? "border-blue-600 text-blue-600"
-                                            : disabled
-                                                ? "border-transparent text-gray-300 cursor-not-allowed"
-                                                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                        ? "border-blue-600 text-blue-600"
+                                        : disabled
+                                            ? "border-transparent text-gray-300 cursor-not-allowed"
+                                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                                         }`}
                                 >
                                     {tab.label}
@@ -589,8 +590,8 @@ const ProductEditorPage = () => {
                                                                     key={val.id}
                                                                     onClick={() => handleGenAttrValueToggle(attr.id, val.id)}
                                                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-colors ${selected
-                                                                            ? "bg-blue-600 text-white border-blue-600"
-                                                                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                                                                        ? "bg-blue-600 text-white border-blue-600"
+                                                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                                                                         }`}
                                                                 >
                                                                     {val.color_code && (
@@ -829,7 +830,17 @@ const ProductEditorPage = () => {
                 message={`Delete variant "${getVariantLabel(deleteVariantTarget || {})}"? This cannot be undone.`}
                 confirmText="Delete"
                 onConfirm={handleDeleteVariant}
-                onCancel={() => setDeleteVariantTarget(null)}
+                onClose={() => setDeleteVariantTarget(null)}
+            />
+
+            {/* Delete Image Confirmation */}
+            <ConfirmationModal
+                isOpen={!!deleteImageTarget}
+                title="Delete Image"
+                message="Are you sure you want to delete this image? This cannot be undone."
+                confirmText="Delete"
+                onConfirm={confirmDeleteImage}
+                onClose={() => setDeleteImageTarget(null)}
             />
         </>
     );
