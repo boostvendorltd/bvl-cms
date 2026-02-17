@@ -50,6 +50,14 @@ const PartnerAccountsView = ({ partnerId }) => {
 
     const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
+    const isRoot = user?.type === 0;
+    const isAdmin = user?.type === 4;
+    const isPartner = user?.type === 2;
+
+    const canEdit = isRoot || isAdmin;
+    const canManageStatus = isRoot || isAdmin;
+    const showActions = canEdit || canManageStatus;
+
     useEffect(() => {
         if (partnerId) {
             dispatch(fetchPartnerAccounts({ partnerId, page: 1, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
@@ -232,7 +240,7 @@ const PartnerAccountsView = ({ partnerId }) => {
     };
 
     const columns = [
-        { header: "ID", accessor: "id" },
+        ...(canEdit ? [{ header: "ID", accessor: "id" }] : []),
         {
             header: "Account Name",
             accessor: "name",
@@ -242,6 +250,7 @@ const PartnerAccountsView = ({ partnerId }) => {
         },
         { header: "Phone", accessor: "phone" },
         { header: "Representative", accessor: "account_representative" },
+        { header: "Address", accessor: "address_1" },
         {
             header: "Status",
             accessor: "user",
@@ -262,41 +271,49 @@ const PartnerAccountsView = ({ partnerId }) => {
                 );
             }
         },
-        {
+        ...(showActions ? [{
             header: "Actions",
             accessor: "actions",
             render: (_, row) => (
                 <div className="flex items-center space-x-2">
-                    {/* Approve Button (Only if unapproved/pending) */}
-                    {(row.user?.is_approved === 0) && (
-                        <button
-                            onClick={() => handleApprove(row)}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
-                        >
-                            Approve
-                        </button>
+
+
+                    {canEdit && (
+                        <>
+                            {/* Approve Button (Only if unapproved/pending) */}
+                            {(row.user?.is_approved === 0) && (
+                                <button
+                                    onClick={() => handleApprove(row)}
+                                    className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                                >
+                                    Approve
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => handleEditClick(row)}
+                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                title="Edit"
+                            >
+                                <PencilSquareIcon className="h-5 w-5" />
+                            </button>
+                        </>
                     )}
 
-                    <button
-                        onClick={() => handleEditClick(row)}
-                        className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                        title="Edit"
-                    >
-                        <PencilSquareIcon className="h-5 w-5" />
-                    </button>
-
-                    <button
-                        onClick={() => handleToggleStatus(row)}
-                        className={`px-3 py-1 text-xs rounded border ${row.user?.status === 1
-                            ? 'border-red-500 text-red-600 hover:bg-red-50'
-                            : 'border-green-500 text-green-600 hover:bg-green-50'
-                            }`}
-                    >
-                        {row.user?.status === 1 ? 'Deactivate' : 'Activate'}
-                    </button>
+                    {canManageStatus && (
+                        <button
+                            onClick={() => handleToggleStatus(row)}
+                            className={`px-3 py-1 text-xs rounded border ${row.user?.status === 1
+                                ? 'border-red-500 text-red-600 hover:bg-red-50'
+                                : 'border-green-500 text-green-600 hover:bg-green-50'
+                                }`}
+                        >
+                            {row.user?.status === 1 ? 'Deactivate' : 'Activate'}
+                        </button>
+                    )}
                 </div>
             )
-        }
+        }] : [])
     ];
 
     return (
@@ -362,7 +379,7 @@ const PartnerAccountsView = ({ partnerId }) => {
                             </div>
                         )}
                         <TableActions
-                            onAdd={() => setIsAddModalOpen(true)}
+                            onAdd={canEdit ? () => setIsAddModalOpen(true) : null}
                             onDownload={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/accounts/${partnerId}`, '_blank')}
                             addButtonText="Add Account"
                         />
@@ -393,7 +410,8 @@ const PartnerAccountsView = ({ partnerId }) => {
                         email: { label: "Email", type: "email" },
                         phone: { label: "Phone", type: "text" },
                         account_representative: { label: "Representative", type: "text" },
-                        address_1: { label: "Address", type: "textarea" }
+                        address_1: { label: "Address Line 1", type: "text" },
+                        address_2: { label: "Address Line 2", type: "text" }
                     }}
                 />
 

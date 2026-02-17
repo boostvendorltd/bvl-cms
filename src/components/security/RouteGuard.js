@@ -12,6 +12,7 @@ const RouteGuard = ({ children, allowedRoles }) => {
         if (!isLoading && user) {
             let role = 'guest';
             if (user.type === 0) role = 'root';
+            else if (user.type === 4) role = 'administrator';
             else if (user.role === 'partner' || user.type === 2) role = 'partner';
             else if (user.role === 'account' || user.type === 3) role = 'account';
             else if (user.role === 'shop' || user.type === 5) role = 'shop';
@@ -20,7 +21,7 @@ const RouteGuard = ({ children, allowedRoles }) => {
                 setAuthorized(true);
             } else {
                 // Redirect unauthorized users
-                if (role === 'root') router.push('/companies');
+                if (role === 'root' || role === 'administrator') router.push('/companies');
                 else if (role === 'partner') router.push('/accounts');
                 else if (role === 'account') router.push('/shops');
                 else if (role === 'shop') router.push('/customers');

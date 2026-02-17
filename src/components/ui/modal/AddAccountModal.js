@@ -11,6 +11,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
         phone: "",
         password: "",
         address_1: "",
+        address_2: "",
         account_representative: "", // Contact Person
     });
     const [loading, setLoading] = useState(false);
@@ -148,16 +149,29 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                                         />
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                        <textarea
-                                            name="address_1"
-                                            value={formData.address_1}
-                                            onChange={handleChange}
-                                            rows="2"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-                                            placeholder="Street address..."
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+                                            <input
+                                                type="text"
+                                                name="address_1"
+                                                value={formData.address_1}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                placeholder="Street address..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+                                            <input
+                                                type="text"
+                                                name="address_2"
+                                                value={formData.address_2}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                placeholder="Apartment, suite, etc."
+                                            />
+                                        </div>
                                     </div>
                                 </form>
 

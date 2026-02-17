@@ -468,4 +468,12 @@ const CategoriesPage = () => {
     );
 };
 
-export default CategoriesPage;
+import RouteGuard from "@/components/security/RouteGuard";
+
+export default function CategoriesPageWithGuard() {
+    return (
+        <RouteGuard allowedRoles={['account', 'shop']}>
+            <CategoriesPage />
+        </RouteGuard>
+    );
+}

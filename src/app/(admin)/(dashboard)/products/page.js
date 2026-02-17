@@ -400,4 +400,12 @@ const ProductsPage = () => {
     );
 };
 
-export default ProductsPage;
+import RouteGuard from "@/components/security/RouteGuard";
+
+export default function ProductsPageWithGuard() {
+    return (
+        <RouteGuard allowedRoles={['account', 'shop']}>
+            <ProductsPage />
+        </RouteGuard>
+    );
+}

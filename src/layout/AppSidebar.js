@@ -112,7 +112,9 @@ const AppSidebar = () => {
         path: "/",
         pro: false
       }]
-    }, {
+    },
+    // Only show Products to Account(3) and Shop(5)
+    ...(![0, 2, 4].includes(Number(user?.type)) ? [{
       icon: <BoxCubeIcon />, // Using box icon for products
       name: "Products",
       subItems: [{
@@ -128,7 +130,8 @@ const AppSidebar = () => {
         path: "/categories",
         pro: false
       }]
-    }, {
+    }] : []),
+    {
       icon: <GroupIcon />,
       name: companiesLabel,
       path: companiesPath

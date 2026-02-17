@@ -28,6 +28,19 @@ const ShopCustomersView = ({ shopId }) => {
     // Delete Modal State
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+    const isRoot = user?.type === 0;
+    const isAdmin = user?.type === 4;
+    const isPartner = user?.type === 2;
+    const isAccount = user?.type === 3 || user?.role === 'account';
+
+    // Permission flags: Customer management is usually for Shop/Account/Admin/Root.
+    // However, user requested Partner (and potentially Account) to be watch only here.
+    const canEdit = isRoot || isAdmin;
+    const canManageStatus = isRoot || isAdmin;
+    const canBulkAction = isRoot || isAdmin;
+    const canDelete = isRoot || isAdmin;
+    const showActions = canEdit || canManageStatus || canDelete;
+
     // Confirmation Modal for single-row status toggle
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
@@ -164,15 +177,12 @@ const ShopCustomersView = ({ shopId }) => {
         });
     };
 
-    // Permission flags
-    const canEdit = user?.type === 0 || user?.type === 4; // Root or Administrator
-    const canManageStatus = [0, 1, 4, 5].includes(user?.type); // Root, administrator, Admin, Shop (NOT Account)
+
 
 
 
     const columns = [
-        // ID column - only for Root/Admin
-        ...(canEdit ? [{ header: "ID", accessor: "id" }] : []),
+        ...(canManageStatus ? [{ header: "ID", accessor: "id" }] : []),
         {
             header: "Customer Name",
             accessor: "name",
@@ -231,7 +241,7 @@ const ShopCustomersView = ({ shopId }) => {
             accessor: "created_at",
             render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
         },
-        ...((canEdit || canManageStatus) ? [{
+        ...(showActions ? [{
             header: "Actions",
             accessor: "actions",
             render: (_, row) => (
@@ -255,6 +265,18 @@ const ShopCustomersView = ({ shopId }) => {
                                 }`}
                         >
                             {row.status === 1 ? 'Deactivate' : 'Activate'}
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            onClick={() => {
+                                setSelectedIds([row.id]);
+                                setIsDeleteModalOpen(true);
+                            }}
+                            className="p-1 text-red-500 hover:bg-red-50 rounded"
+                            title="Delete"
+                        >
+                            <TrashIcon className="h-5 w-5" />
                         </button>
                     )}
                 </div>
@@ -314,7 +336,7 @@ const ShopCustomersView = ({ shopId }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {canEdit && selectedIds.length > 0 && (
+                        {canBulkAction && selectedIds.length > 0 && (
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
                                 {/* Bulk Status: Root (0) & Admin (4) */}
@@ -331,7 +353,7 @@ const ShopCustomersView = ({ shopId }) => {
                                     Deactivate
                                 </button>
                                 {/* Bulk Delete: Root (0) Only */}
-                                {user?.type === 0 && (
+                                {canDelete && (
                                     <button
                                         onClick={handleBulkDelete}
                                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100"

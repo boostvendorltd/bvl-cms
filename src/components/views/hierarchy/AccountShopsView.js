@@ -57,10 +57,16 @@ const AccountShopsView = ({ accountId, partnerId }) => {
     // Permission flags
     const isRoot = user?.type === 0;
     const isAdmin = user?.type === 4;
+    const isPartner = user?.type === 2;
     const isAccount = user?.type === 3 || user?.role === 'account';
+
+    // Permission flags
     const canManageStatus = isRoot || isAdmin; // Only Root/Admin can toggle shop status
     const canBulkAction = isRoot || isAdmin;
     const canEditFull = isRoot || isAdmin; // Full edit (contract, billing, status, etc.)
+    const canEditLimited = isAccount; // Account can edit limited info
+    const canEditAtAll = canEditFull || canEditLimited; // Partner cannot edit anything
+    const showActions = canEditAtAll || canManageStatus;
 
     useEffect(() => {
         if (accountId) {
@@ -289,7 +295,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
     };
 
     const columns = [
-        { header: "ID", accessor: "id" },
+        ...(canEditFull ? [{ header: "ID", accessor: "id" }] : []),
         {
             header: "Logo",
             accessor: "profile",
@@ -375,7 +381,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                 );
             }
         },
-        {
+        ...(showActions ? [{
             header: "Actions",
             accessor: "actions",
             render: (_, row) => (
@@ -388,29 +394,44 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                             Approve
                         </button>
                     )}
-
-                    <button
-                        onClick={() => handleEditClick(row)}
-                        className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                        title="Edit"
-                    >
-                        <PencilSquareIcon className="h-5 w-5" />
-                    </button>
+                    {canEditAtAll && (
+                        <button
+                            onClick={() => handleEditClick(row)}
+                            className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                            title="Edit"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                    )}
 
                     {canManageStatus && (
                         <button
                             onClick={() => handleToggleStatus(row)}
-                            className={`px-3 py-1 text-xs rounded border ${row.status === 1 || row.status === '1'
+                            className={`px-3 py-1 text-xs rounded border ${(row.status == 1 || row.status == '1')
                                 ? 'border-red-500 text-red-600 hover:bg-red-50'
                                 : 'border-green-500 text-green-600 hover:bg-green-50'
                                 }`}
                         >
-                            {row.status == 1 ? 'Deactivate' : 'Activate'}
+                            {(row.status == 1 || row.status == '1') ? 'Deactivate' : 'Activate'}
+                        </button>
+                    )}
+
+                    {/* Root Only Actions */}
+                    {isRoot && (
+                        <button
+                            onClick={() => {
+                                setSelectedIds([row.id]); // Select the single row for deletion
+                                setIsDeleteModalOpen(true); // Open the delete modal
+                            }}
+                            className="p-1 text-red-500 hover:bg-red-50 rounded"
+                            title="Delete"
+                        >
+                            <TrashIcon className="h-5 w-5" />
                         </button>
                     )}
                 </div>
             )
-        }
+        }] : [])
     ];
 
     return (
@@ -471,7 +492,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                             </div>
                         )}
                         <TableActions
-                            onAdd={(isRoot || isAdmin) ? () => setIsAddModalOpen(true) : null}
+                            onAdd={canEditFull ? () => setIsAddModalOpen(true) : null}
                             onDownload={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/shops/${accountId}`, '_blank')}
                             addButtonText="Add Shop"
                         />

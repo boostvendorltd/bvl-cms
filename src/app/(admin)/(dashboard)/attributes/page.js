@@ -466,4 +466,12 @@ const AttributesPage = () => {
     );
 };
 
-export default AttributesPage;
+import RouteGuard from "@/components/security/RouteGuard";
+
+export default function AttributesPageWithGuard() {
+    return (
+        <RouteGuard allowedRoles={['account', 'shop']}>
+            <AttributesPage />
+        </RouteGuard>
+    );
+}
