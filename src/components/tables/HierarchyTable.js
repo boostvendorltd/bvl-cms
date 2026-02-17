@@ -62,8 +62,8 @@ export default function HierarchyTable({
                                     {columns.map((col, colIndex) => {
                                         const value = row[col.accessor];
 
-                                        // Special handling for First Column (ID) -> Clickable for Modal
-                                        if (colIndex === 0) {
+                                        // Special handling for ID Column -> Clickable for Modal
+                                        if (col.accessor === 'id') {
                                             return (
                                                 <TableCell key={colIndex} className="px-5 py-4 sm:px-6 text-start text-theme-sm">
                                                     {onIdClick ? (

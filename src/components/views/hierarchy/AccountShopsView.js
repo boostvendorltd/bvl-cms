@@ -54,6 +54,14 @@ const AccountShopsView = ({ accountId, partnerId }) => {
 
     const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
+    // Permission flags
+    const isRoot = user?.type === 0;
+    const isAdmin = user?.type === 4;
+    const isAccount = user?.type === 3 || user?.role === 'account';
+    const canManageStatus = isRoot || isAdmin; // Only Root/Admin can toggle shop status
+    const canBulkAction = isRoot || isAdmin;
+    const canEditFull = isRoot || isAdmin; // Full edit (contract, billing, status, etc.)
+
     useEffect(() => {
         if (accountId) {
             dispatch(fetchAccountShops({ accountId, page: 1, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
@@ -70,6 +78,19 @@ const AccountShopsView = ({ accountId, partnerId }) => {
             ...row,
             domain_url: row.domain?.url || '',
             type_id: row.type_id || row.shop_type?.id,
+            // Flatten profile fields for the edit modal
+            logo: row.profile?.logo || '',
+            banner: row.profile?.banner || '',
+            slogan: row.profile?.slogan || '',
+            description: row.profile?.description || '',
+            fb_link: row.profile?.fb_link || '',
+            youtube_link: row.profile?.youtube_link || '',
+            instagram_link: row.profile?.instagram_link || '',
+            twitter_link: row.profile?.twitter_link || '',
+            tiktok_link: row.profile?.tiktok_link || '',
+            meta_title: row.profile?.meta_title || '',
+            meta_description: row.profile?.meta_description || '',
+            meta_keywords: row.profile?.meta_keywords || '',
         };
         setSelectedRow(preparedRow);
         setIsEditModalOpen(true);
@@ -291,8 +312,16 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                 return map[value] || 'Unknown';
             }
         },
-        { header: "Contract Start Date", accessor: "contract_start_date" },
-        { header: "Contract End Date", accessor: "contract_end_date" },
+        {
+            header: "Contract Start",
+            accessor: "contract_start",
+            render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+        },
+        {
+            header: "Contract End",
+            accessor: "contract_end",
+            render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+        },
         {
             header: "Status",
             accessor: "status",
@@ -317,7 +346,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
             accessor: "actions",
             render: (_, row) => (
                 <div className="flex items-center space-x-2">
-                    {(row.status === 2 || row.status === '2') && (
+                    {canManageStatus && (row.status === 2 || row.status === '2') && (
                         <button
                             onClick={() => handleApprove(row)}
                             className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
@@ -334,15 +363,17 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                         <PencilSquareIcon className="h-5 w-5" />
                     </button>
 
-                    <button
-                        onClick={() => handleToggleStatus(row)}
-                        className={`px-3 py-1 text-xs rounded border ${row.status === 1 || row.status === '1'
-                            ? 'border-red-500 text-red-600 hover:bg-red-50'
-                            : 'border-green-500 text-green-600 hover:bg-green-50'
-                            }`}
-                    >
-                        {row.status == 1 ? 'Deactivate' : 'Activate'}
-                    </button>
+                    {canManageStatus && (
+                        <button
+                            onClick={() => handleToggleStatus(row)}
+                            className={`px-3 py-1 text-xs rounded border ${row.status === 1 || row.status === '1'
+                                ? 'border-red-500 text-red-600 hover:bg-red-50'
+                                : 'border-green-500 text-green-600 hover:bg-green-50'
+                                }`}
+                        >
+                            {row.status == 1 ? 'Deactivate' : 'Activate'}
+                        </button>
+                    )}
                 </div>
             )
         }
@@ -378,28 +409,23 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {selectedIds.length > 0 && (
+                        {canBulkAction && selectedIds.length > 0 && (
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
-                                {/* Bulk Status: Root (0) & Admin (4) */}
-                                {(user?.type === 0 || user?.type === 4) && (
-                                    <>
-                                        <button
-                                            onClick={() => handleBulkStatusUpdate(1)}
-                                            className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-md hover:bg-emerald-100"
-                                        >
-                                            Activate
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkStatusUpdate(0)}
-                                            className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                                        >
-                                            Deactivate
-                                        </button>
-                                    </>
-                                )}
+                                <button
+                                    onClick={() => handleBulkStatusUpdate(1)}
+                                    className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-md hover:bg-emerald-100"
+                                >
+                                    Activate
+                                </button>
+                                <button
+                                    onClick={() => handleBulkStatusUpdate(0)}
+                                    className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                >
+                                    Deactivate
+                                </button>
                                 {/* Bulk Delete: Root (0) Only */}
-                                {user?.type === 0 && (
+                                {isRoot && (
                                     <button
                                         onClick={handleBulkDelete}
                                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100"
@@ -425,7 +451,7 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                     isLoading={isLoading}
                     onPageChange={handlePageChange}
                     onIdClick={handleEditClick}
-                    selectable={true}
+                    selectable={canBulkAction}
                     selectedIds={selectedIds}
                     onSelect={handleSelectRow}
                     onSelectAll={handleSelectAll}
@@ -438,8 +464,13 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                     data={selectedRow}
                     onSave={handleSaveShop}
                     title="Edit Shop"
-                    fields={{
+                    fields={canEditFull ? {
+                        // Full fields for Root/Admin
                         name: { label: "Shop Name", type: "text" },
+                        phone: { label: "Phone", type: "text" },
+                        address_1: { label: "Address 1", type: "text" },
+                        address_2: { label: "Address 2", type: "text" },
+                        shop_representative: { label: "Shop Representative", type: "text" },
                         domain_url: { label: "Domain (URL)", type: "text" },
                         status: {
                             label: "Status",
@@ -460,7 +491,37 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                             label: "Shop Type",
                             type: "select",
                             options: shopTypes.reduce((acc, type) => ({ ...acc, [type.id]: type.title }), {})
-                        }
+                        },
+                        slogan: { label: "Slogan", type: "text" },
+                        description: { label: "Description", type: "textarea" },
+                        fb_link: { label: "Facebook Link", type: "text" },
+                        youtube_link: { label: "YouTube Link", type: "text" },
+                        instagram_link: { label: "Instagram Link", type: "text" },
+                        twitter_link: { label: "Twitter Link", type: "text" },
+                        tiktok_link: { label: "TikTok Link", type: "text" },
+                        meta_title: { label: "Meta Title", type: "text" },
+                        meta_description: { label: "Meta Description", type: "textarea" },
+                        meta_keywords: { label: "Meta Keywords", type: "text" },
+                        note: { label: "Note", type: "textarea" },
+                    } : {
+                        // Limited fields for Account role
+                        name: { label: "Shop Name", type: "text" },
+                        phone: { label: "Phone", type: "text" },
+                        address_1: { label: "Address 1", type: "text" },
+                        address_2: { label: "Address 2", type: "text" },
+                        shop_representative: { label: "Shop Representative", type: "text" },
+                        country_info: { label: "Country Info", type: "text" },
+                        slogan: { label: "Slogan", type: "text" },
+                        description: { label: "Description", type: "textarea" },
+                        fb_link: { label: "Facebook Link", type: "text" },
+                        youtube_link: { label: "YouTube Link", type: "text" },
+                        instagram_link: { label: "Instagram Link", type: "text" },
+                        twitter_link: { label: "Twitter Link", type: "text" },
+                        tiktok_link: { label: "TikTok Link", type: "text" },
+                        meta_title: { label: "Meta Title", type: "text" },
+                        meta_description: { label: "Meta Description", type: "textarea" },
+                        meta_keywords: { label: "Meta Keywords", type: "text" },
+                        note: { label: "Note", type: "textarea" },
                     }}
                 />
 

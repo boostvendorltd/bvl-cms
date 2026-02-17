@@ -166,7 +166,7 @@ const ShopCustomersView = ({ shopId }) => {
 
     // Permission flags
     const canEdit = user?.type === 0 || user?.type === 4; // Root or Administrator
-    const canManageStatus = [0, 2, 3, 4, 5].includes(user?.type); // All hierarchy roles including Shop
+    const canManageStatus = [0, 1, 4, 5].includes(user?.type); // Root, administrator, Admin, Shop (NOT Account)
 
 
 
@@ -231,7 +231,7 @@ const ShopCustomersView = ({ shopId }) => {
             accessor: "created_at",
             render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
         },
-        {
+        ...((canEdit || canManageStatus) ? [{
             header: "Actions",
             accessor: "actions",
             render: (_, row) => (
@@ -259,7 +259,7 @@ const ShopCustomersView = ({ shopId }) => {
                     )}
                 </div>
             )
-        }
+        }] : [])
     ];
 
     const handleIdClick = (row) => {
