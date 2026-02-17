@@ -173,16 +173,30 @@ const AccountShopsPage = ({ params }) => {
             render: (domain) => domain ? domain.url : 'No Domain'
         },
         {
+            header: "Email",
+            accessor: "user",
+            render: (user) => user ? user.email : 'No Email'
+        },
+        {
             header: "Type",
             accessor: "shop_type",
             render: (type) => type ? type.title : 'N/A'
         },
-        { header: "Contract", accessor: "contract_status" },
         {
-            header: "Cost",
-            accessor: "monthly_cost",
-            render: (cost) => cost ? `$${cost}` : 'N/A'
+            header: "Contract",
+            accessor: "contract_status",
+            render: (value) => {
+                const map = {
+                    0: 'Agreement',
+                    1: 'Pending',
+                    2: 'Preparing',
+                    3: 'Cancellation'
+                };
+                return map[value] || 'Unknown';
+            }
         },
+        { header: "Contract Start Date", accessor: "contract_start_date" },
+        { header: "Contract End Date", accessor: "contract_end_date" },
         {
             header: "Status",
             accessor: "status",

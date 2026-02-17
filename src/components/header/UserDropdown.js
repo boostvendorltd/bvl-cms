@@ -1,18 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/features/auth-slice";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import AppImage from "../ui/AppImage";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
+  const { user } = useSelector((state) => state.auth);
 
   function toggleDropdown(e) {
     e.stopPropagation();
@@ -31,13 +33,28 @@ export default function UserDropdown() {
       router.push("/signin");
     }
   };
+
+  /* 
+   * Helper to resolve image URL 
+   * Handles blob: URLs (preview), http/https URLs (external), and relative paths (backend storage)
+   */
+  const getImageUrl = (path) => {
+    if (!path) return "/images/user/default.jpg";
+    if (path.startsWith("blob:") || path.startsWith("http")) return path;
+    const baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/v1\/?$/, '');
+    const fullPath = `${baseURL}${path.startsWith('/') ? '' : '/'}${path}`;
+    return encodeURI(fullPath);
+  };
+
+  const userImage = getImageUrl(user?.avatar || user?.profile_photo_url);
+
   return <div className="relative">
     <button onClick={toggleDropdown} className="flex items-center text-gray-700 dark:text-gray-400 dropdown-toggle">
       <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-        <Image width={44} height={44} src="/images/user/owner.jpg" alt="User" />
+        <AppImage width={44} height={44} src={userImage} alt="User" className="object-cover w-full h-full" />
       </span>
 
-      <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+      <span className="block mr-1 font-medium text-theme-sm">{user?.name || "User"}</span>
 
       <svg className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -47,10 +64,10 @@ export default function UserDropdown() {
     <Dropdown isOpen={isOpen} onClose={closeDropdown} className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark">
       <div>
         <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-          Musharof Chowdhury
+          {user?.name || "User"}
         </span>
         <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-          randomuser@pimjo.com
+          {user?.email || "No Email"}
         </span>
       </div>
 

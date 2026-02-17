@@ -22,6 +22,7 @@ import {
     ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import AppImage from "@/components/ui/AppImage";
 
 const STATUS_MAP = {
     0: { label: "Inactive", color: "bg-gray-100 text-gray-700" },
@@ -134,6 +135,13 @@ const ProductsPage = () => {
         return v ? parseFloat(v.price).toFixed(2) : "—";
     };
 
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith("http")) return path;
+        const baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/v1\/?$/, '');
+        return `${baseURL}/storage/${path}`;
+    };
+
     return (
         <>
             <PageBreadCrumb pageTitle="Products" />
@@ -244,12 +252,13 @@ const ProductsPage = () => {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 rounded-lg">
+                                                        <div className="relative flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 rounded-lg">
                                                             {imgPath ? (
-                                                                <img
-                                                                    src={`${window.location.protocol}//${window.location.hostname}:8000/storage/${imgPath}`}
+                                                                <AppImage
+                                                                    src={getImageUrl(imgPath)}
                                                                     alt={product.name}
-                                                                    className="object-cover w-full h-full"
+                                                                    fill
+                                                                    className="object-cover"
                                                                 />
                                                             ) : (
                                                                 <div className="flex items-center justify-center w-full h-full text-gray-400">

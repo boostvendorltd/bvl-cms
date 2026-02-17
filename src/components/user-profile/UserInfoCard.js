@@ -6,6 +6,7 @@ import { updateProfile } from "@/redux/features/auth-slice";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
+import AppImage from "@/components/ui/AppImage";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 
@@ -56,7 +57,7 @@ export default function UserInfoCard() {
         instagram: user.instagram || "",
         github: user.github || ""
       });
-      setPreviewUrl(user.avatar || "/images/user/owner.jpg");
+      setPreviewUrl(user.avatar || "/images/user/default.jpg");
       setSelectedFile(null);
     }
   }, [user, isOpen]);
@@ -120,17 +121,18 @@ export default function UserInfoCard() {
    * Handles blob: URLs (preview), http/https URLs (external), and relative paths (backend storage)
    */
   const getImageUrl = (path) => {
-    if (!path) return "/images/user/owner.jpg";
+    if (!path) return "/images/user/default.jpg";
     if (path.startsWith("blob:") || path.startsWith("http")) return path;
     const baseURL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/v1\/?$/, '');
-    return `${baseURL}${path.startsWith('/') ? '' : '/'}${path}`;
+    const fullPath = `${baseURL}${path.startsWith('/') ? '' : '/'}${path}`;
+    return encodeURI(fullPath);
   };
 
   return <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
     <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between mb-6">
       <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
         <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-          <img
+          <AppImage
             src={getImageUrl(user.avatar)}
             alt="User Avatar"
             width={80}
@@ -407,7 +409,7 @@ export default function UserInfoCard() {
                   accept="image/*"
                 />
                 <div onClick={handleAvatarClick} className="w-16 h-16 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 cursor-pointer hover:opacity-80 transition-opacity">
-                  <img
+                  <AppImage
                     src={getImageUrl(previewUrl || user.avatar)}
                     alt="User Avatar"
                     width={64}
