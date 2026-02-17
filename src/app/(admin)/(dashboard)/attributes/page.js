@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchAttributes, createAttribute, updateAttribute, deleteAttribute, addAttributeValue, deleteAttributeValue,
@@ -11,7 +11,7 @@ import HierarchyTable from "@/components/tables/HierarchyTable";
 import TableActions from "@/components/tables/TableActions";
 import QuickEditModal from "@/components/ui/modal/QuickEditModal";
 import ConfirmationModal from "@/components/ui/modal/ConfirmationModal";
-import { PencilSquareIcon, TrashIcon, PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, TrashIcon, PlusCircleIcon, XMarkIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
@@ -153,12 +153,28 @@ const AttributesPage = () => {
         message: ""
     });
 
+    // Bulk Delete Modal
+    const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
+    // Filter State
+    const [search, setSearch] = useState("");
+    const [typeFilter, setTypeFilter] = useState("");
+
     // Bulk Selection State
     const [selectedIds, setSelectedIds] = useState([]);
 
     useEffect(() => {
         dispatch(fetchAttributes());
     }, [dispatch]);
+
+    // Filter Logic
+    const filteredAttributes = useMemo(() => {
+        return (attributes || []).filter(attr => {
+            const matchesSearch = attr.name.toLowerCase().includes(search.toLowerCase());
+            const matchesType = typeFilter === "" || attr.type === typeFilter;
+            return matchesSearch && matchesType;
+        });
+    }, [attributes, search, typeFilter]);
 
     const handleEdit = (row) => {
         setSelectedAttribute(row);
@@ -214,10 +230,6 @@ const AttributesPage = () => {
 
     const handleAddValue = async (id, data) => {
         await dispatch(addAttributeValue({ id, data })).unwrap();
-        // Update local selected attribute to show immediate change in modal
-        // But since state updates, we rely on the modal re-rendering from updated store state if we passed it correctly
-        // Wait, 'selectedAttribute' is local state, it won't auto-update from store unless we sync it.
-        // Better: Pass fresh data from store to modal.
     };
 
     const handleDeleteValue = async (id, valueId) => {
@@ -237,18 +249,18 @@ const AttributesPage = () => {
 
     const toggleSelectAll = (isChecked) => {
         if (isChecked) {
-            setSelectedIds(attributes.map((attr) => attr.id));
+            setSelectedIds(filteredAttributes.map((attr) => attr.id));
         } else {
             setSelectedIds([]);
         }
     };
 
-    const handleBulkDelete = async () => {
+    const handleBulkDeleteClick = () => {
         if (selectedIds.length === 0) return;
+        setIsBulkDeleteModalOpen(true);
+    };
 
-        // Show confirmation before deleting
-        if (!confirm('Are you sure you want to delete ' + selectedIds.length + ' attributes?')) return;
-
+    const confirmBulkDelete = async () => {
         try {
             await toast.promise(
                 dispatch(bulkDeleteAttributes(selectedIds)).unwrap(),
@@ -259,6 +271,7 @@ const AttributesPage = () => {
                 }
             );
             setSelectedIds([]);
+            setIsBulkDeleteModalOpen(false);
             dispatch(fetchAttributes()); // Re-fetch attributes after bulk delete
         } catch (error) {
             // handled by toast
@@ -266,7 +279,7 @@ const AttributesPage = () => {
     };
 
     const openAddModal = () => {
-        setSelectedAttribute(null); // Clear any previously selected attribute
+        setSelectedAttribute(null);
         setIsAddModalOpen(true);
     };
 
@@ -324,30 +337,59 @@ const AttributesPage = () => {
         <>
             <PageBreadCrumb pageTitle="Attributes" />
             <div className="space-y-6">
-                <br />
-                <div className="flex items-center gap-3 mb-6">
-                    {selectedIds.length > 0 && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
-                            <button
-                                onClick={handleBulkDelete}
-                                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
-                            >
-                                <TrashIcon className="w-4 h-4" />
-                                Delete
-                            </button>
+
+                {/* Toolbar */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2">
+                        <div className="relative">
+                            <MagnifyingGlassIcon className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Search attributes..."
+                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
                         </div>
-                    )}
-                    <TableActions
-                        onAdd={() => openAddModal()}
-                        addButtonText="Add Attribute"
-                        hideSearch={true} // Simple list for now
-                        hideFilter={true}
-                    />
+                        <select
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)}
+                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="">All Types</option>
+                            <option value="text">Text</option>
+                            <option value="select">Select</option>
+                            <option value="radio">Radio</option>
+                            <option value="color">Color</option>
+                            <option value="image">Image</option>
+                        </select>
+                    </form>
+
+                    <div className="flex items-center gap-3">
+                        {selectedIds.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
+                                <button
+                                    onClick={handleBulkDeleteClick}
+                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20"
+                                >
+                                    <TrashIcon className="w-4 h-4" />
+                                    Delete
+                                </button>
+                            </div>
+                        )}
+                        <TableActions
+                            onAdd={() => openAddModal()}
+                            addButtonText="Add Attribute"
+                            hideSearch={true}
+                            hideFilter={true}
+                        />
+                    </div>
                 </div>
+
                 <HierarchyTable
                     columns={columns}
-                    data={attributes}
+                    data={filteredAttributes}
                     isLoading={loading}
                     pagination={null}
                     selectable={true}
@@ -370,7 +412,7 @@ const AttributesPage = () => {
                         type: "select",
                         options: { text: "Text", select: "Select/Dropdown", radio: "Radio Button", color: "Color Swatch", image: "Pattern/Image" }
                     },
-                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } } // Quick hack for bool
+                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } }
                 }}
             />
 
@@ -401,13 +443,23 @@ const AttributesPage = () => {
                 onDeleteValue={handleDeleteValue}
             />
 
-            {/* Confirm Modal */}
+            {/* Confirm Modal (Single) */}
             <ConfirmationModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ isOpen: false, data: null })}
                 onConfirm={confirmDelete}
                 title={confirmModal.title}
                 message={confirmModal.message}
+                type="danger"
+            />
+
+            {/* Confirm Modal (Bulk) */}
+            <ConfirmationModal
+                isOpen={isBulkDeleteModalOpen}
+                onClose={() => setIsBulkDeleteModalOpen(false)}
+                onConfirm={confirmBulkDelete}
+                title="Bulk Delete Attributes"
+                message={`Are you sure you want to delete ${selectedIds.length} attributes?`}
                 type="danger"
             />
         </>
