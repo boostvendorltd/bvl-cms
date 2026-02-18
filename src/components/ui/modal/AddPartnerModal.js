@@ -4,8 +4,10 @@ import React, { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
+const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
     const [formData, setFormData] = useState({
+        parent_partner_id: "",
+        partner_name: "",
         name: "",
         email: "",
         phone: "",
@@ -13,6 +15,8 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
         commission_rate: 0,
         commission_type: "percentage",
         address_1: "",
+        address_2: "",
+        note: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -29,8 +33,32 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
         try {
             await onSave(formData);
             onClose();
+            // Reset form
+            setFormData({
+                parent_partner_id: "",
+                partner_name: "",
+                name: "",
+                email: "",
+                phone: "",
+                password: "",
+                commission_rate: 0,
+                commission_type: "percentage",
+                address_1: "",
+                address_2: "",
+                note: "",
+            });
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to create partner");
+            let errorMsg = "Failed to create partner";
+            if (typeof err === "string") {
+                errorMsg = err;
+            } else if (err?.errors) {
+                // Collect all validation errors
+                const errors = Object.values(err.errors).flat();
+                errorMsg = errors.length > 0 ? errors.join(", ") : (err.message || errorMsg);
+            } else if (err?.message) {
+                errorMsg = err.message;
+            }
+            setError(errorMsg);
         } finally {
             setLoading(false);
         }
@@ -94,9 +122,26 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
                                                 onChange={handleChange}
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                                placeholder="Partner Name"
+                                                placeholder="Name"
                                             />
                                         </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Parent Partner</label>
+                                            <select
+                                                name="parent_partner_id"
+                                                value={formData.parent_partner_id}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                                            >
+                                                <option value="">None (Top Level)</option>
+                                                {partners.map((p) => (
+                                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                             <input
@@ -107,6 +152,18 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                                 placeholder="email@example.com"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                                            <input
+                                                type="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                required
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                placeholder="Min 8 characters"
                                             />
                                         </div>
                                     </div>
@@ -121,18 +178,6 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                                                 placeholder="+1..."
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                                            <input
-                                                type="password"
-                                                name="password"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                                                placeholder="Min 8 characters"
                                             />
                                         </div>
                                     </div>
@@ -163,21 +208,46 @@ const AddPartnerModal = ({ isOpen, onClose, onSave }) => {
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+                                            <input
+                                                type="text"
+                                                name="address_1"
+                                                value={formData.address_1}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                placeholder="Street, Block..."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+                                            <input
+                                                type="text"
+                                                name="address_2"
+                                                value={formData.address_2}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                placeholder="City, State, Country..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-span-full">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
                                         <textarea
-                                            name="address_1"
-                                            value={formData.address_1}
+                                            name="note"
+                                            value={formData.note}
                                             onChange={handleChange}
-                                            rows="2"
+                                            rows="4"
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-                                            placeholder="Street address..."
+                                            placeholder="Additional notes..."
                                         />
                                     </div>
                                 </form>
 
                                 {/* Footer */}
-                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
+                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3 mt-auto">
                                     <button
                                         onClick={onClose}
                                         disabled={loading}

@@ -8,7 +8,7 @@ import ConfirmationModal from "@/components/ui/modal/ConfirmationModal";
 import TableActions from "@/components/tables/TableActions";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPartners, createPartner, updatePartner, togglePartnerStatus } from "@/redux/features/hierarchy-slice";
+import { fetchPartners, createPartner, updatePartner, togglePartnerStatus, fetchPartnersList, approvePartner } from "@/redux/features/hierarchy-slice";
 import { useRouter } from "next/navigation";
 import { PencilSquareIcon, MagnifyingGlassIcon, TrashIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ import { bulkDeletePartners, bulkUpdatePartnerStatus } from "@/redux/features/hi
 const CompaniesPage = () => {
     const dispatch = useDispatch();
     const router = useRouter();
-    const { partners, pagination, isLoading } = useSelector((state) => state.hierarchy);
+    const { partners, partnersList, pagination, isLoading } = useSelector((state) => state.hierarchy);
     const { user } = useSelector((state) => state.auth);
 
     const [selectedRow, setSelectedRow] = useState(null);
@@ -48,6 +48,7 @@ const CompaniesPage = () => {
 
     useEffect(() => {
         dispatch(fetchPartners({ page: 1, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
+        dispatch(fetchPartnersList());
     }, [dispatch, searchQuery, statusFilter]);
 
     const handlePageChange = (page) => {
@@ -149,6 +150,44 @@ const CompaniesPage = () => {
         }
     };
 
+    const handleApprove = (row) => {
+        setConfirmModal({
+            isOpen: true,
+            title: "Approve Partner",
+            message: `Are you sure you want to approve ${row.name}?`,
+            type: "warning",
+            confirmText: "Approve",
+            onConfirm: async () => {
+                setConfirmModal(prev => ({ ...prev, isLoading: true }));
+                try {
+                    await toast.promise(
+                        dispatch(approvePartner(row.id)).unwrap(),
+                        {
+                            loading: 'Approving partner...',
+                            success: 'Partner approved successfully!',
+                            error: (err) => `Error: ${formatError(err)}`
+                        }
+                    );
+                    dispatch(fetchPartners({ page: pagination.current_page }));
+                    closeConfirmModal();
+                } catch (error) {
+                    // Toast handles error
+                } finally {
+                    setConfirmModal(prev => ({ ...prev, isLoading: false }));
+                }
+            }
+        });
+    };
+
+    const formatError = (err) => {
+        if (typeof err === "string") return err;
+        if (err?.errors) {
+            const errors = Object.values(err.errors).flat();
+            return errors.length > 0 ? errors.join(", ") : (err.message || "An error occurred");
+        }
+        return err?.message || "An error occurred";
+    };
+
     const handleSavePartner = async (id, formData) => {
         try {
             await toast.promise(
@@ -156,7 +195,7 @@ const CompaniesPage = () => {
                 {
                     loading: 'Updating partner...',
                     success: 'Partner updated successfully!',
-                    error: (err) => `Error: ${err}`
+                    error: (err) => `Error: ${formatError(err)}`
                 }
             );
             dispatch(fetchPartners({ page: pagination.current_page }));
@@ -172,7 +211,7 @@ const CompaniesPage = () => {
                 {
                     loading: 'Creating partner...',
                     success: 'Partner created successfully!',
-                    error: (err) => `Error: ${err}`
+                    error: (err) => `Error: ${formatError(err)}`
                 }
             );
             dispatch(fetchPartners({ page: 1 }));
@@ -185,30 +224,41 @@ const CompaniesPage = () => {
     const columns = [
         { header: "ID", accessor: "id" },
         {
-            header: "Partner Name",
+            header: "Name",
             accessor: "name",
             isLink: true,
             getLink: (row) => `/companies/${row.id}/accounts`,
-            subtitleAccessor: "email"
         },
+        {
+            header: "Parent Partner",
+            accessor: "parent",
+            render: (parent) => parent?.name || 'None'
+        },
+        { header: "Email", accessor: "email" },
         { header: "Phone", accessor: "phone" },
+        { header: "Address 1", accessor: "address_1" },
+        { header: "Address 2", accessor: "address_2" },
         {
             header: "Commission",
             accessor: "commission_rate",
-            render: (value, row) => `${value || 0}% (${row.commission_type || 'N/A'})`
+            render: (value, row) => `${value || 0}% (${row.commission_type || 'percentage'})`
         },
+        { header: "Note", accessor: "note" },
         {
             header: "Status",
             accessor: "user",
             render: (user) => {
                 const status = user?.status;
-                const config = status === 1
-                    ? { label: 'Active', color: 'bg-green-100 text-green-800' }
-                    : { label: 'Inactive', color: 'bg-red-100 text-red-800' };
+                let label = 'Unknown';
+                let color = 'bg-gray-100 text-gray-800';
+
+                if (status === 1) { label = 'Active'; color = 'bg-green-100 text-green-800'; }
+                else if (status === 0) { label = 'Inactive'; color = 'bg-red-100 text-red-800'; }
+                else if (status === 2 || user?.is_approved === 0) { label = 'Pending'; color = 'bg-orange-100 text-orange-800'; }
 
                 return (
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-                        {config.label}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+                        {label}
                     </span>
                 );
             }
@@ -234,6 +284,14 @@ const CompaniesPage = () => {
                     >
                         {row.user?.status === 1 ? 'Deactivate' : 'Activate'}
                     </button>
+                    {row.user?.is_approved === 0 && (
+                        <button
+                            onClick={() => handleApprove(row)}
+                            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                        >
+                            Approve
+                        </button>
+                    )}
                 </div>
             )
         }
@@ -271,24 +329,6 @@ const CompaniesPage = () => {
                         {selectedIds.length > 0 && (
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
-                                {/* Bulk Status: Root (0) & Admin (4) */}
-                                {(user?.type === 0 || user?.type === 4) && (
-                                    <>
-                                        <button
-                                            onClick={() => handleBulkStatusUpdate(1)}
-                                            className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-md hover:bg-emerald-100"
-                                        >
-                                            Activate
-                                        </button>
-                                        <button
-                                            onClick={() => handleBulkStatusUpdate(0)}
-                                            className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                                        >
-                                            Deactivate
-                                        </button>
-                                    </>
-                                )}
-                                {/* Bulk Delete: Root (0) Only */}
                                 {user?.type === 0 && (
                                     <button
                                         onClick={handleBulkDelete}
@@ -327,11 +367,23 @@ const CompaniesPage = () => {
             <QuickEditModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
-                data={selectedRow}
+                data={{
+                    ...selectedRow,
+                    partner_name: selectedRow?.name,
+                    name: selectedRow?.user?.name
+                }}
                 onSave={handleSavePartner}
                 title="Edit Partner"
                 fields={{
-                    name: { label: "Partner Name", type: "text" },
+                    name: { label: "Name", type: "text" },
+                    parent_partner_id: {
+                        label: "Parent Partner",
+                        type: "select",
+                        options: {
+                            "": "None",
+                            ...partnersList.reduce((acc, p) => ({ ...acc, [p.id]: p.name }), {})
+                        }
+                    },
                     email: { label: "Email", type: "email" },
                     phone: { label: "Phone", type: "text" },
                     commission_rate: { label: "Commission Rate (%)", type: "number" },
@@ -340,7 +392,9 @@ const CompaniesPage = () => {
                         type: "select",
                         options: { percentage: "Percentage", fixed: "Fixed" }
                     },
-                    address_1: { label: "Address", type: "textarea" }
+                    address_1: { label: "Address Line 1", type: "text" },
+                    address_2: { label: "Address Line 2", type: "text" },
+                    note: { label: "Note", type: "textarea" }
                 }}
             />
 
@@ -348,6 +402,7 @@ const CompaniesPage = () => {
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSave={handleCreatePartner}
+                partners={partnersList}
             />
 
             <ConfirmationModal

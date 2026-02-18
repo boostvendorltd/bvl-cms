@@ -3,6 +3,7 @@ import api from "../../utils/api";
 
 const initialState = {
     partners: [],
+    partnersList: [],
     currentPartnerAccounts: [],
     currentAccountShops: [],
     shopTypes: [],
@@ -16,6 +17,18 @@ const initialState = {
 };
 
 // --- Partners ---
+
+export const fetchPartnersList = createAsyncThunk(
+    "hierarchy/fetchPartnersList",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get("/cms/partners/list");
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch partners list");
+        }
+    }
+);
 
 export const fetchPartners = createAsyncThunk(
     "hierarchy/fetchPartners",
@@ -61,7 +74,7 @@ export const createPartner = createAsyncThunk(
             const response = await api.post("/cms/partners", partnerData);
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Failed to create partner");
+            return rejectWithValue(error.response?.data || error.message || "Failed to create partner");
         }
     }
 );
@@ -73,7 +86,7 @@ export const updatePartner = createAsyncThunk(
             const response = await api.put(`/cms/partners/${id}`, data);
             return response.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Failed to update partner");
+            return rejectWithValue(error.response?.data || error.message || "Failed to update partner");
         }
     }
 );
@@ -86,6 +99,18 @@ export const togglePartnerStatus = createAsyncThunk(
             return { id, status: response.data.status };
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to toggle status");
+        }
+    }
+);
+
+export const approvePartner = createAsyncThunk(
+    "hierarchy/approvePartner",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/cms/partners/${id}/approve`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message || "Failed to approve partner");
         }
     }
 );
@@ -297,6 +322,9 @@ const hierarchySlice = createSlice({
                     current_page: action.payload.current_page,
                     last_page: action.payload.last_page
                 };
+            })
+            .addCase(fetchPartnersList.fulfilled, (state, action) => {
+                state.partnersList = action.payload;
             })
             .addCase(fetchPartners.rejected, (state, action) => {
                 state.isLoading = false;
