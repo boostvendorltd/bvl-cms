@@ -242,15 +242,19 @@ const PartnerAccountsView = ({ partnerId }) => {
     const columns = [
         ...(canEdit ? [{ header: "ID", accessor: "id" }] : []),
         {
-            header: "Account Name",
+            header: "Name",
             accessor: "name",
             isLink: true,
-            getLink: getPartnerAccountsLink,
-            subtitleAccessor: "email"
+            getLink: getPartnerAccountsLink
+        },
+        {
+            header: "Email",
+            accessor: "email"
         },
         { header: "Phone", accessor: "phone" },
         { header: "Representative", accessor: "account_representative" },
-        { header: "Address", accessor: "address_1" },
+        { header: "Address Line 1", accessor: "address_1" },
+        { header: "Address Line 2", accessor: "address_2" },
         {
             header: "Status",
             accessor: "user",
