@@ -283,8 +283,28 @@ const PartnerAccountsView = ({ partnerId }) => {
 
 
                     {canEdit && (
+                        <button
+                            onClick={() => handleEditClick(row)}
+                            className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                            title="Edit"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+
+                    )}
+
+                    {canManageStatus && (
                         <>
-                            {/* Approve Button (Only if unapproved/pending) */}
+                            <button
+                                onClick={() => handleToggleStatus(row)}
+                                className={`px-3 py-1 text-xs rounded border ${row.user?.status === 1
+                                    ? 'border-red-500 text-red-600 hover:bg-red-50'
+                                    : 'border-green-500 text-green-600 hover:bg-green-50'
+                                    }`}
+                            >
+                                {row.user?.status === 1 ? 'Deactivate' : 'Activate'}
+                            </button>
+
                             {(row.user?.is_approved === 0) && (
                                 <button
                                     onClick={() => handleApprove(row)}
@@ -293,27 +313,7 @@ const PartnerAccountsView = ({ partnerId }) => {
                                     Approve
                                 </button>
                             )}
-
-                            <button
-                                onClick={() => handleEditClick(row)}
-                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                                title="Edit"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
                         </>
-                    )}
-
-                    {canManageStatus && (
-                        <button
-                            onClick={() => handleToggleStatus(row)}
-                            className={`px-3 py-1 text-xs rounded border ${row.user?.status === 1
-                                ? 'border-red-500 text-red-600 hover:bg-red-50'
-                                : 'border-green-500 text-green-600 hover:bg-green-50'
-                                }`}
-                        >
-                            {row.user?.status === 1 ? 'Deactivate' : 'Activate'}
-                        </button>
                     )}
                 </div>
             )

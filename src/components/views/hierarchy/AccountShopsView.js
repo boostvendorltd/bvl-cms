@@ -386,14 +386,6 @@ const AccountShopsView = ({ accountId, partnerId }) => {
             accessor: "actions",
             render: (_, row) => (
                 <div className="flex items-center space-x-2">
-                    {canManageStatus && (row.status === 2 || row.status === '2') && (
-                        <button
-                            onClick={() => handleApprove(row)}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
-                        >
-                            Approve
-                        </button>
-                    )}
                     {canEditAtAll && (
                         <button
                             onClick={() => handleEditClick(row)}
@@ -413,6 +405,15 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                                 }`}
                         >
                             {(row.status == 1 || row.status == '1') ? 'Deactivate' : 'Activate'}
+                        </button>
+                    )}
+
+                    {canManageStatus && (row.status === 2 || row.status === '2') && (
+                        <button
+                            onClick={() => handleApprove(row)}
+                            className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                        >
+                            Approve
                         </button>
                     )}
 
