@@ -393,7 +393,7 @@ const PartnerAccountsView = ({ partnerId }) => {
                     isLoading={isLoading}
                     onPageChange={handlePageChange}
                     onIdClick={handleEditClick}
-                    selectable={true}
+                    selectable={!isPartner}
                     selectedIds={selectedIds}
                     onSelect={handleSelectRow}
                     onSelectAll={handleSelectAll}
