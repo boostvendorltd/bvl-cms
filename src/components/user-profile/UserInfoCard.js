@@ -4,11 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateProfile } from "@/redux/features/auth-slice";
 import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import AppImage from "@/components/ui/AppImage";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function UserInfoCard() {
   const { user } = useSelector((state) => state.auth);
@@ -383,130 +385,165 @@ export default function UserInfoCard() {
     )}
 
     {/* EDIT MODAL */}
-    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-      <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-        <div className="px-2 pr-14">
-          <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-            Edit Profile
-          </h4>
-          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-            Update your personal details and social links.
-          </p>
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-[9999]" onClose={closeModal}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto z-[10000]">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                  <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900">
+                    Edit Profile
+                  </Dialog.Title>
+                  <button
+                    onClick={closeModal}
+                    className="p-2 text-gray-400 transition-colors rounded-full hover:bg-gray-200 hover:text-gray-600"
+                  >
+                    <XMarkIcon className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto p-6">
+                  <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+                    <div>
+                      <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                        Personal Information
+                      </h5>
+
+                      <div className="flex items-center gap-4 mb-6">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="hidden"
+                          onChange={handleFileChange}
+                          accept="image/*"
+                        />
+                        <div onClick={handleAvatarClick} className="w-16 h-16 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 cursor-pointer hover:opacity-80 transition-opacity">
+                          <AppImage
+                            src={getImageUrl(previewUrl || user.avatar)}
+                            alt="User Avatar"
+                            width={64}
+                            height={64}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <span onClick={handleAvatarClick} className="text-sm font-medium text-gray-800 dark:text-white/90 cursor-pointer hover:underline">Profile Picture</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">Click image to upload new avatar</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                        <div className="col-span-2">
+                          <Label>Full Name</Label>
+                          <Input type="text" name="name" value={formData.name} onChange={handleChange} />
+                        </div>
+
+                        <div className="col-span-2 lg:col-span-1">
+                          <Label>Phone</Label>
+                          <Input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+                        </div>
+
+                        <div className="col-span-2 lg:col-span-1">
+                          <Label>Date of Birth</Label>
+                          <Input type="date" name="dob" value={formData.dob} onChange={handleChange} />
+                        </div>
+
+                        <div className="col-span-2 lg:col-span-1">
+                          <Label>Gender</Label>
+                          <select
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+
+                        <div className="col-span-2 lg:col-span-1">
+                          <Label>Timezone</Label>
+                          <select
+                            name="timezone"
+                            value={formData.timezone}
+                            onChange={handleChange}
+                            className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                          >
+                            <option value="">Select Timezone</option>
+                            {timezones.map(tz => (
+                              <option key={tz} value={tz}>{tz}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Social Links Section in Form */}
+                      <div className="mt-8">
+                        <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                          Social Links
+                        </h5>
+                        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                          <div>
+                            <Label>Facebook</Label>
+                            <Input type="text" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/username" />
+                          </div>
+                          <div>
+                            <Label>X.com (Twitter)</Label>
+                            <Input type="text" name="twitter" value={formData.twitter} onChange={handleChange} placeholder="https://x.com/username" />
+                          </div>
+                          <div>
+                            <Label>Linkedin</Label>
+                            <Input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/username" />
+                          </div>
+                          <div>
+                            <Label>Instagram</Label>
+                            <Input type="text" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/username" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3 mt-auto">
+                  <Button size="sm" variant="outline" onClick={closeModal} type="button">
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={handleSave} type="button">
+                    Save Changes
+                  </Button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
         </div>
-        <form className="flex flex-col">
-          <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-            <div>
-              <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                Personal Information
-              </h5>
-
-              <div className="flex items-center gap-4 mb-6">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                />
-                <div onClick={handleAvatarClick} className="w-16 h-16 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 cursor-pointer hover:opacity-80 transition-opacity">
-                  <AppImage
-                    src={getImageUrl(previewUrl || user.avatar)}
-                    alt="User Avatar"
-                    width={64}
-                    height={64}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span onClick={handleAvatarClick} className="text-sm font-medium text-gray-800 dark:text-white/90 cursor-pointer hover:underline">Profile Picture</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Click image to upload new avatar</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                <div className="col-span-2">
-                  <Label>Full Name</Label>
-                  <Input type="text" name="name" value={formData.name} onChange={handleChange} />
-                </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Phone</Label>
-                  <Input type="text" name="phone" value={formData.phone} onChange={handleChange} />
-                </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Date of Birth</Label>
-                  <Input type="date" name="dob" value={formData.dob} onChange={handleChange} />
-                </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Gender</Label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Timezone</Label>
-                  <select
-                    name="timezone"
-                    value={formData.timezone}
-                    onChange={handleChange}
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                  >
-                    <option value="">Select Timezone</option>
-                    {timezones.map(tz => (
-                      <option key={tz} value={tz}>{tz}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Social Links Section in Form */}
-              <div className="mt-8">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input type="text" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/username" />
-                  </div>
-                  <div>
-                    <Label>X.com (Twitter)</Label>
-                    <Input type="text" name="twitter" value={formData.twitter} onChange={handleChange} placeholder="https://x.com/username" />
-                  </div>
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/username" />
-                  </div>
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/username" />
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-            <Button size="sm" variant="outline" onClick={closeModal} type="button">
-              Close
-            </Button>
-            <Button size="sm" onClick={handleSave} type="button">
-              Save Changes
-            </Button>
-          </div>
-        </form>
-      </div>
-    </Modal>
+      </Dialog>
+    </Transition>
   </div>;
 }
