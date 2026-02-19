@@ -31,16 +31,35 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
 
                 let value = data[key];
 
-                // Handle nested objects if necessary, though flat data is expected mostly
-                // Special handling for specific fields or formatting
                 if (config[key].type === 'date' && value) {
-                    // Start/End date might come as full ISO string, extract YYYY-MM-DD
                     value = value.split('T')[0];
                 }
 
                 initialData[key] = value !== undefined && value !== null ? value : "";
             });
-            // Preserve ID if needed, but onSave takes ID separately
+            setFormData(initialData);
+        } else {
+            // Creation mode: Initialize with default values if provided, or empty strings
+            const initialData = {};
+            Object.keys(config).forEach(key => {
+                const field = config[key];
+                if (field.type === 'ignore' || field.type === 'section') return;
+
+                if (field.type === 'select' && field.options) {
+                    // Default to first option value
+                    const firstOption = Array.isArray(field.options)
+                        ? field.options[0]
+                        : Object.entries(field.options)[0];
+
+                    if (Array.isArray(field.options)) {
+                        initialData[key] = firstOption?.value !== undefined ? firstOption.value : "";
+                    } else {
+                        initialData[key] = firstOption ? firstOption[0] : "";
+                    }
+                } else {
+                    initialData[key] = "";
+                }
+            });
             setFormData(initialData);
         }
     }, [data, config]);
@@ -68,6 +87,13 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
         const value = formData[key] || "";
 
         if (type === 'select') {
+            const options = Array.isArray(fieldConfig.options)
+                ? fieldConfig.options
+                : Object.entries(fieldConfig.options || {}).map(([val, label]) => ({
+                    value: val,
+                    label: typeof label === 'object' ? label.label : label
+                }));
+
             return (
                 <div key={key}>
                     <label className="block text-sm font-medium text-gray-700">{label}</label>
@@ -77,9 +103,9 @@ const QuickEditModal = ({ isOpen, onClose, data, onSave, title = "Edit Item", fi
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2 bg-white"
                     >
-                        {Object.entries(fieldConfig.options || {}).map(([optValue, optLabel]) => (
-                            <option key={optValue} value={optValue}>
-                                {typeof optLabel === 'object' ? optLabel.label : optLabel}
+                        {options.map((opt, idx) => (
+                            <option key={`${opt.value}-${idx}`} value={opt.value}>
+                                {opt.label}
                             </option>
                         ))}
                     </select>

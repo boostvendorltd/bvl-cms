@@ -412,7 +412,15 @@ const AttributesPage = () => {
                         type: "select",
                         options: { text: "Text", select: "Select/Dropdown", radio: "Radio Button", color: "Color Swatch", image: "Pattern/Image" }
                     },
-                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } }
+                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } },
+                    status: {
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: 1, label: "Active" },
+                            { value: 0, label: "Inactive" }
+                        ]
+                    }
                 }}
             />
 
@@ -430,7 +438,15 @@ const AttributesPage = () => {
                         type: "select",
                         options: { text: "Text", select: "Select/Dropdown", radio: "Radio Button", color: "Color Swatch", image: "Pattern/Image" }
                     },
-                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } }
+                    is_variant: { label: "Used for Variations?", type: "select", options: { 1: "Yes", 0: "No" } },
+                    status: {
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: 1, label: "Active" },
+                            { value: 0, label: "Inactive" }
+                        ]
+                    }
                 }}
             />
 
@@ -470,7 +486,7 @@ import RouteGuard from "@/components/security/RouteGuard";
 
 export default function AttributesPageWithGuard() {
     return (
-        <RouteGuard allowedRoles={['account', 'shop']}>
+        <RouteGuard allowedRoles={['account', 'shop']} requireShop={true}>
             <AttributesPage />
         </RouteGuard>
     );

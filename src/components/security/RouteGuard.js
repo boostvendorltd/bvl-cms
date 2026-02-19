@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const RouteGuard = ({ children, allowedRoles }) => {
+const RouteGuard = ({ children, allowedRoles, requireShop = false }) => {
     const { user, isLoading } = useSelector((state) => state.auth);
     const router = useRouter();
     const [authorized, setAuthorized] = useState(false);
@@ -18,7 +18,22 @@ const RouteGuard = ({ children, allowedRoles }) => {
             else if (user.role === 'shop' || user.type === 5) role = 'shop';
 
             if (allowedRoles.includes(role)) {
-                setAuthorized(true);
+                // If shop is required and user is an account, check if they have shops
+                if (requireShop && role === 'account') {
+                    if (user.account?.shops?.length > 0) {
+                        setAuthorized(true);
+                    } else {
+                        router.push('/shops');
+                    }
+                } else if (requireShop && role === 'shop') {
+                    if (user.shop) {
+                        setAuthorized(true);
+                    } else {
+                        router.push('/');
+                    }
+                } else {
+                    setAuthorized(true);
+                }
             } else {
                 // Redirect unauthorized users
                 if (role === 'root' || role === 'administrator') router.push('/companies');

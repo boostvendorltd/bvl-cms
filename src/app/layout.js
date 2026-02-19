@@ -14,7 +14,12 @@ export default function RootLayout({
   return <html lang="en">
     <body className={`${outfit.className} dark:bg-gray-900`} suppressHydrationWarning={true}>
       <Providers>
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          containerStyle={{
+            zIndex: 100000,
+          }}
+        />
         <ThemeProvider>
           <SidebarProvider>{children}</SidebarProvider>
         </ThemeProvider>

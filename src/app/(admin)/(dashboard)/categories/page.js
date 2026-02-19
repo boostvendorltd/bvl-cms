@@ -16,6 +16,7 @@ import ConfirmationModal from "@/components/ui/modal/ConfirmationModal";
 import { PencilSquareIcon, TrashIcon, ChevronRightIcon, ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import AppImage from "@/components/ui/AppImage";
+import ProductGuard from "@/components/auth/ProductGuard";
 
 const getImageUrl = (path) => {
     if (!path) return null;
@@ -278,13 +279,12 @@ const CategoriesPage = () => {
     };
 
     // Prepare options for Parent Selector
-    const parentOptions = {};
-    flatCategories?.forEach(c => {
-        if (selectedCategory && c.id === selectedCategory?.id) return; // Self check
-        parentOptions[c.id] = c.name;
-    });
-    // Add "None" option
-    const parentOptionsWithNone = { "": "None (Root)", ...parentOptions };
+    const parentOptionsWithNone = [
+        { value: "", label: "None (Root)" },
+        ...(flatCategories || [])
+            .filter(c => !selectedCategory || c.id !== selectedCategory?.id)
+            .map(c => ({ value: c.id, label: c.name }))
+    ];
 
     // Recursive rendering helper
     const renderCategories = (cats, level = 0) => {
@@ -423,7 +423,14 @@ const CategoriesPage = () => {
                 fields={{
                     name: { label: "Category Name", type: "text" },
                     parent_id: { label: "Parent Category", type: "select", options: parentOptionsWithNone },
-                    status: { label: "Status", type: "select", options: { 1: "Active", 0: "Inactive" } },
+                    status: {
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: 1, label: "Active" },
+                            { value: 0, label: "Inactive" }
+                        ]
+                    },
                     image: { label: "Category Image", type: "file" },
                     description: { label: "Description", type: "textarea" }
                 }}
@@ -439,7 +446,14 @@ const CategoriesPage = () => {
                 fields={{
                     name: { label: "Category Name", type: "text" },
                     parent_id: { label: "Parent Category", type: "select", options: parentOptionsWithNone },
-                    status: { label: "Status", type: "select", options: { 1: "Active", 0: "Inactive" } },
+                    status: {
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: 1, label: "Active" },
+                            { value: 0, label: "Inactive" }
+                        ]
+                    },
                     image: { label: "Category Image", type: "file" },
                     description: { label: "Description", type: "textarea" }
                 }}
@@ -472,7 +486,7 @@ import RouteGuard from "@/components/security/RouteGuard";
 
 export default function CategoriesPageWithGuard() {
     return (
-        <RouteGuard allowedRoles={['account', 'shop']}>
+        <RouteGuard allowedRoles={['account', 'shop']} requireShop={true}>
             <CategoriesPage />
         </RouteGuard>
     );

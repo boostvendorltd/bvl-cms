@@ -379,10 +379,10 @@ const CompaniesPage = () => {
                     parent_partner_id: {
                         label: "Parent Partner",
                         type: "select",
-                        options: {
-                            "": "None",
-                            ...partnersList.reduce((acc, p) => ({ ...acc, [p.id]: p.name }), {})
-                        }
+                        options: [
+                            { value: "", label: "None" },
+                            ...partnersList.map(p => ({ value: p.id, label: p.name }))
+                        ]
                     },
                     email: { label: "Email", type: "email" },
                     phone: { label: "Phone", type: "text" },

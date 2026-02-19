@@ -404,7 +404,7 @@ import RouteGuard from "@/components/security/RouteGuard";
 
 export default function ProductsPageWithGuard() {
     return (
-        <RouteGuard allowedRoles={['account', 'shop']}>
+        <RouteGuard allowedRoles={['account', 'shop']} requireShop={true}>
             <ProductsPage />
         </RouteGuard>
     );

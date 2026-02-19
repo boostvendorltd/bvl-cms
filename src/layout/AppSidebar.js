@@ -109,24 +109,25 @@ const AppSidebar = () => {
         pro: false
       }]
     },
-    // Only show Products to Account(3) and Shop(5)
-    ...(![0, 2, 4].includes(Number(user?.type)) ? [{
-      icon: <BoxCubeIcon />, // Using box icon for products
-      name: "Products",
-      subItems: [{
-        name: "All Products",
-        path: "/products",
-        pro: false
-      }, {
-        name: "Attributes",
-        path: "/attributes",
-        pro: false
-      }, {
-        name: "Categories",
-        path: "/categories",
-        pro: false
-      }]
-    }] : []),
+    // Only show Products to Account(3) and Shop(5) if they have shops
+    ...(((user?.type === 3 && user?.account?.shops?.length > 0) ||
+      (user?.type === 5 && user?.shop)) ? [{
+        icon: <BoxCubeIcon />, // Using box icon for products
+        name: "Products",
+        subItems: [{
+          name: "All Products",
+          path: "/products",
+          pro: false
+        }, {
+          name: "Attributes",
+          path: "/attributes",
+          pro: false
+        }, {
+          name: "Categories",
+          path: "/categories",
+          pro: false
+        }]
+      }] : []),
     {
       icon: <GroupIcon />,
       name: companiesLabel,
