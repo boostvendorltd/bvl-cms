@@ -172,11 +172,6 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                 }
             });
 
-            // Add email which might be missing in some roles
-            if (!formData.email && selectedRow?.user?.email) {
-                dataToSubmit.append('email', selectedRow.user.email);
-            }
-
             // Standard Laravel way to handle PUT with files: POST + _method override
             dataToSubmit.append('_method', 'PUT');
 
@@ -521,72 +516,124 @@ const AccountShopsView = ({ accountId, partnerId }) => {
                     onSave={handleSaveShop}
                     title="Edit Shop"
                     fields={canEditFull ? {
-                        // Full fields for Root/Admin
-                        logo: { label: "Shop Logo", type: "file" },
-                        banner: { label: "Shop Banner", type: "file" },
-                        branding_section: { label: "Shop Branding & Info", type: "section" },
+                        // ==== Basic Info ====
+                        basic_info_section: { label: "Basic Info", type: "section" },
                         name: { label: "Shop Name", type: "text" },
-                        phone: { label: "Phone", type: "text" },
-                        address_1: { label: "Address 1", type: "text" },
-                        address_2: { label: "Address 2", type: "text" },
-                        shop_representative: { label: "Shop Representative", type: "text" },
-                        domain_url: { label: "Domain (URL)", type: "text" },
+                        domain_url: { label: "Domain (URL)", type: "text", dataKey: "domain.url" },
+                        type_id: {
+                            label: "Shop Type",
+                            type: "select",
+                            dataKey: "type",
+                            options: shopTypes.reduce((acc, type) => ({ ...acc, [type.id]: type.title }), {})
+                        },
+                        register_date: { label: "Register Date", type: "date" },
                         status: {
                             label: "Status",
                             type: 'select',
                             options: { 0: 'Inactive', 1: 'Active', 2: 'Pending', 3: 'Archived' }
                         },
+
+                        // ==== Contact & Location ====
+                        contact_location_section: { label: "Contact & Location", type: "section" },
+                        phone: { label: "Phone", type: "text" },
+                        shop_representative: { label: "Shop Representative", type: "text" },
+                        address_1: { label: "Address 1", type: "text" },
+                        address_2: { label: "Address 2", type: "text" },
+                        country_info: { label: "Country Info", type: "text" },
+                        break_1: { type: "br" },
+                        is_whatsapp: { label: "Has WhatsApp?", type: "checkbox" },
+                        is_telegram: { label: "Has Telegram?", type: "checkbox" },
+
+                        // ==== Contract Details ====
+                        contract_details_section: { label: "Contract Details", type: "section" },
                         contract_status: {
                             label: "Contract Status",
                             type: 'select',
                             options: { 0: 'Agreement', 1: 'Pending', 2: 'Preparing', 3: 'Cancellation' }
                         },
-                        monthly_cost: { label: "Monthly Cost ($)", type: "number" },
-                        initial_cost: { label: "Initial Cost ($)", type: "number" },
+                        contract_update_interval: { label: "Update Interval (Months)", type: "number" },
                         contract_start: { label: "Contract Start", type: "date" },
                         contract_end: { label: "Contract End", type: "date" },
-                        register_date: { label: "Register Date", type: "date" },
-                        type_id: {
-                            label: "Shop Type",
+                        contract_file: { label: "Contract File", type: "file", accept: ".pdf,.doc,.docx,.jpg,.jpeg,.png" },
+
+                        // ==== Financials ====
+                        financials_section: { label: "Financials", type: "section" },
+                        initial_cost: { label: "Initial Cost ($)", type: "number" },
+                        monthly_cost: { label: "Monthly Cost ($)", type: "number" },
+                        initial_transfer_amount: { label: "Initial Transfer ($)", type: "number" },
+                        monthly_transfer_amount: { label: "Monthly Transfer ($)", type: "number" },
+                        commission_rate: { label: "Commission Rate (%)", type: "number" },
+                        payment_method: {
+                            label: "Payment Method",
                             type: "select",
-                            options: shopTypes.reduce((acc, type) => ({ ...acc, [type.id]: type.title }), {})
+                            options: { 1: "Bank Transfer", 2: "Cash", 3: "Crypto" }
                         },
-                        slogan: { label: "Slogan", type: "text" },
-                        description: { label: "Description", type: "textarea" },
+
+                        // ==== Branding & Profile ====
+                        branding_section: { label: "Shop Branding & Info", type: "section" },
+                        logo: { label: "Shop Logo", type: "file", accept: "image/*", dataKey: "profile.logo" },
+                        banner: { label: "Shop Banner", type: "file", accept: "image/*", dataKey: "profile.banner" },
+                        slogan: { label: "Slogan", type: "text", dataKey: "profile.slogan" },
+                        description: { label: "Description", type: "textarea", dataKey: "profile.description" },
+
+                        // ==== Social & SEO ====
                         social_section: { label: "Social Links", type: "section" },
-                        fb_link: { label: "Facebook Link", type: "text" },
-                        youtube_link: { label: "YouTube Link", type: "text" },
-                        instagram_link: { label: "Instagram Link", type: "text" },
-                        twitter_link: { label: "Twitter Link", type: "text" },
-                        tiktok_link: { label: "TikTok Link", type: "text" },
+                        fb_link: { label: "Facebook Link", type: "text", dataKey: "profile.fb_link" },
+                        youtube_link: { label: "YouTube Link", type: "text", dataKey: "profile.youtube_link" },
+                        instagram_link: { label: "Instagram Link", type: "text", dataKey: "profile.instagram_link" },
+                        twitter_link: { label: "Twitter Link", type: "text", dataKey: "profile.twitter_link" },
+                        tiktok_link: { label: "TikTok Link", type: "text", dataKey: "profile.tiktok_link" },
+
                         seo_section: { label: "SEO & Meta Info", type: "section" },
-                        meta_title: { label: "Meta Title", type: "text" },
-                        meta_description: { label: "Meta Description", type: "textarea" },
-                        meta_keywords: { label: "Meta Keywords", type: "text" },
+                        meta_title: { label: "Meta Title", type: "text", dataKey: "profile.meta_title" },
+                        meta_description: { label: "Meta Description", type: "textarea", dataKey: "profile.meta_description" },
+                        meta_keywords: { label: "Meta Keywords", type: "text", dataKey: "profile.meta_keywords" },
+
+                        note_section: { label: "Notes", type: "section" },
                         note: { label: "Note", type: "textarea" },
                     } : {
                         // Limited fields for Account role
-                        logo: { label: "Shop Logo", type: "file" },
-                        banner: { label: "Shop Banner", type: "file" },
-                        branding_section: { label: "Shop Branding & Info", type: "section" },
+                        basic_info_section: { label: "Basic Info", type: "section" },
                         name: { label: "Shop Name", type: "text" },
+                        type_id: {
+                            label: "Shop Type",
+                            type: "select",
+                            dataKey: "type",
+                            options: shopTypes.reduce((acc, type) => ({ ...acc, [type.id]: type.title }), {})
+                        },
+
+                        contact_location_section: { label: "Contact & Location", type: "section" },
                         phone: { label: "Phone", type: "text" },
+                        shop_representative: { label: "Shop Representative", type: "text" },
                         address_1: { label: "Address 1", type: "text" },
                         address_2: { label: "Address 2", type: "text" },
-                        shop_representative: { label: "Shop Representative", type: "text" },
                         country_info: { label: "Country Info", type: "text" },
-                        slogan: { label: "Slogan", type: "text" },
-                        description: { label: "Description", type: "textarea" },
+                        break_2: { type: "br" },
+                        is_whatsapp: { label: "Has WhatsApp?", type: "checkbox" },
+                        is_telegram: { label: "Has Telegram?", type: "checkbox" },
+
+                        contract_details_section: { label: "Contract Details", type: "section" },
+                        contract_file: { label: "Contract File", type: "file", accept: ".pdf,.doc,.docx,.jpg,.jpeg,.png" },
+
+                        branding_section: { label: "Shop Branding & Info", type: "section" },
+                        logo: { label: "Shop Logo", type: "file", accept: "image/*", dataKey: "profile.logo" },
+                        banner: { label: "Shop Banner", type: "file", accept: "image/*", dataKey: "profile.banner" },
+                        slogan: { label: "Slogan", type: "text", dataKey: "profile.slogan" },
+                        description: { label: "Description", type: "textarea", dataKey: "profile.description" },
+
                         social_section: { label: "Social Links", type: "section" },
-                        fb_link: { label: "Facebook Link", type: "text" },
-                        youtube_link: { label: "YouTube Link", type: "text" },
-                        instagram_link: { label: "Instagram Link", type: "text" },
-                        twitter_link: { label: "Twitter Link", type: "text" },
-                        tiktok_link: { label: "TikTok Link", type: "text" },
+                        fb_link: { label: "Facebook Link", type: "text", dataKey: "profile.fb_link" },
+                        youtube_link: { label: "YouTube Link", type: "text", dataKey: "profile.youtube_link" },
+                        instagram_link: { label: "Instagram Link", type: "text", dataKey: "profile.instagram_link" },
+                        twitter_link: { label: "Twitter Link", type: "text", dataKey: "profile.twitter_link" },
+                        tiktok_link: { label: "TikTok Link", type: "text", dataKey: "profile.tiktok_link" },
+
                         seo_section: { label: "SEO & Meta Info", type: "section" },
-                        meta_title: { label: "Meta Title", type: "text" },
-                        meta_keywords: { label: "Meta Keywords", type: "text" },
-                        meta_description: { label: "Meta Description", type: "textarea" },
+                        meta_title: { label: "Meta Title", type: "text", dataKey: "profile.meta_title" },
+                        meta_keywords: { label: "Meta Keywords", type: "text", dataKey: "profile.meta_keywords" },
+                        meta_description: { label: "Meta Description", type: "textarea", dataKey: "profile.meta_description" },
+
+                        note_section: { label: "Notes", type: "section" },
                         note: { label: "Note", type: "textarea" },
                     }}
                 />

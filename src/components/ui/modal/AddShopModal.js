@@ -29,6 +29,7 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
         contract_update_interval: "12",
         contract_start: "",
         contract_end: "",
+        contract_file: null,
     });
     const [shopTypes, setShopTypes] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -115,8 +116,13 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
     }, [formData.contract_start, formData.contract_update_interval]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked, files } = e.target;
+
+        let newValue = value;
+        if (type === 'checkbox') newValue = checked;
+        if (type === 'file') newValue = files.length > 0 ? files[0] : null;
+
+        setFormData((prev) => ({ ...prev, [name]: newValue }));
 
         // Clear specific domain errors when user starts typing again
         if (name === "domain_url" || name === "unique_domain") {
@@ -148,7 +154,23 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
         setLoading(true);
         setError("");
         try {
-            await onSave(formData);
+            const formDataToSend = new FormData();
+
+            Object.keys(formData).forEach(key => {
+                // Determine whether boolean or file or other primitive
+                if (key === 'contract_file') {
+                    if (formData.contract_file) {
+                        formDataToSend.append('contract_file', formData.contract_file);
+                    }
+                } else if (typeof formData[key] === 'boolean') {
+                    // Booleans send as 1 or 0 typically
+                    formDataToSend.append(key, formData[key] ? '1' : '0');
+                } else if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+                    formDataToSend.append(key, formData[key]);
+                }
+            });
+
+            await onSave(formDataToSend);
             toast.success("Shop created successfully");
             onClose();
         } catch (err) {
@@ -294,7 +316,7 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                 value={formData.register_date}
                                                 onChange={handleChange}
                                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white dark:[color-scheme:dark]"
                                             />
                                         </div>
                                     </div>
@@ -334,7 +356,7 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                     value={formData.contract_start}
                                                     onChange={handleChange}
                                                     onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white dark:[color-scheme:dark]"
                                                 />
                                             </div>
                                             <div>
@@ -345,7 +367,17 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                     value={formData.contract_end}
                                                     onChange={handleChange}
                                                     onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white dark:[color-scheme:dark]"
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contract File (PDF, Word, or Image)</label>
+                                                <input
+                                                    type="file"
+                                                    name="contract_file"
+                                                    onChange={handleChange}
+                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                                 />
                                             </div>
                                         </div>
