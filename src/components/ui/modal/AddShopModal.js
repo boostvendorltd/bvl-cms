@@ -34,6 +34,8 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
     const [loading, setLoading] = useState(false);
     const [fetchingTypes, setFetchingTypes] = useState(false);
     const [error, setError] = useState("");
+    const [domainErrors, setDomainErrors] = useState({ domain_url: "", unique_domain: "" });
+    const [validating, setValidating] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -54,6 +56,44 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
             fetchShopTypes();
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const checkDomain = async () => {
+            if (!formData.domain_url && !formData.unique_domain) return;
+
+            setValidating(true);
+            try {
+                const params = new URLSearchParams();
+                if (formData.domain_url) params.append("domain_url", formData.domain_url);
+                if (formData.unique_domain) params.append("unique_domain", formData.unique_domain);
+
+                await axios.get(`/cms/shops/validate-domain?${params.toString()}`);
+                setDomainErrors({ domain_url: "", unique_domain: "" });
+
+                // Clear the main error if it was domain related
+                if (error === "Please fix the domain errors before proceeding.") {
+                    setError("");
+                }
+            } catch (err) {
+                if (err.response?.status === 422 && err.response?.data?.errors) {
+                    setDomainErrors({
+                        domain_url: err.response.data.errors.domain_url || "",
+                        unique_domain: err.response.data.errors.unique_domain || ""
+                    });
+                    setError("Please fix the domain errors before proceeding.");
+                }
+            } finally {
+                setValidating(false);
+            }
+        };
+
+        const timeoutId = setTimeout(() => {
+            checkDomain();
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [formData.domain_url, formData.unique_domain, isOpen]);
 
     useEffect(() => {
         if (formData.contract_start && formData.contract_update_interval) {
@@ -77,6 +117,15 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Clear specific domain errors when user starts typing again
+        if (name === "domain_url" || name === "unique_domain") {
+            setDomainErrors(prev => ({ ...prev, [name]: "" }));
+            // Also clear generic error if it was about domains
+            if (error === "Please fix the domain errors before proceeding.") {
+                setError("");
+            }
+        }
     };
 
     const formatError = (err) => {
@@ -90,6 +139,12 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
+
+        if (domainErrors.domain_url || domainErrors.unique_domain) {
+            setError("Please fix the domain errors before proceeding.");
+            return;
+        }
+
         setLoading(true);
         setError("");
         try {
@@ -165,29 +220,39 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Domain URL *</label>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Domain URL *</label>
+                                                {validating && <span className="text-xs text-blue-500 animate-pulse">Checking...</span>}
+                                                {!validating && formData.domain_url && !domainErrors.domain_url && <span className="text-xs text-green-500">✓ Available</span>}
+                                            </div>
                                             <input
                                                 type="text"
                                                 name="domain_url"
                                                 value={formData.domain_url}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
+                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-all bg-white dark:bg-gray-700 dark:text-white ${domainErrors.domain_url ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"}`}
                                                 placeholder="mystore.com"
                                             />
+                                            {domainErrors.domain_url && <p className="mt-1 text-xs text-red-500">{domainErrors.domain_url}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unique Domain ID *</label>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Unique Domain ID *</label>
+                                                {validating && <span className="text-xs text-blue-500 animate-pulse">Checking...</span>}
+                                                {!validating && formData.unique_domain && !domainErrors.unique_domain && <span className="text-xs text-green-500">✓ Available</span>}
+                                            </div>
                                             <input
                                                 type="text"
                                                 name="unique_domain"
                                                 value={formData.unique_domain}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
+                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none transition-all bg-white dark:bg-gray-700 dark:text-white ${domainErrors.unique_domain ? "border-red-500 focus:ring-red-500" : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"}`}
                                                 placeholder="mystore"
                                             />
+                                            {domainErrors.unique_domain && <p className="mt-1 text-xs text-red-500">{domainErrors.unique_domain}</p>}
                                         </div>
                                     </div>
 
