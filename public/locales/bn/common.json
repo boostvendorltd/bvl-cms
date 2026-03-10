@@ -1,0 +1,25 @@
+{
+  "common": {
+    "DASHBOARD": "ড্যাশবোর্ড",
+    "PRODUCTS": "পণ্য",
+    "PARTNERS": "পার্টনার",
+    "ACCOUNTS": "অ্যাকাউন্ট",
+    "SHOPS": "দোকান",
+    "CUSTOMERS": "গ্রাহক",
+    "PROFILE": "প্রোফাইল",
+    "SIGN_OUT": "লগ আউট",
+    "SIGN_IN": "সাইন ইন",
+    "EMAIL": "ইমেইল",
+    "PASSWORD": "পাসওয়ার্ড",
+    "FORGOT_PASSWORD": "পাসওয়ার্ড ভুলে গেছেন?",
+    "KEEP_ME_LOGGED_IN": "আমাকে লগ ইন রাখুন",
+    "SIGN_IN_DESC": "সাইন ইন করতে আপনার ইমেল এবং পাসওয়ার্ড লিখুন!",
+    "GROW_BUSINESS_TAGLINE": "আপনার ব্যবসাকে বড় করুন আমাদের সাথে!",
+    "SEARCH_PLACEHOLDER": "অনুসন্ধান করুন...",
+    "ECOMMERCE": "ইকমার্স",
+    "ALL_PRODUCTS": "সব পণ্য",
+    "ATTRIBUTES": "বৈশিষ্ট্য",
+    "CATEGORIES": "ক্যাটেগরি",
+    "MENU": "মেনু"
+  }
+}

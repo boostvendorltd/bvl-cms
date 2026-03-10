@@ -7,11 +7,15 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import { BoxCubeIcon, CalenderIcon, ChevronDownIcon, GridIcon, HorizontaLDots, ListIcon, PageIcon, PieChartIcon, PlugInIcon, TableIcon, UserCircleIcon, GroupIcon } from "../icons/index";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+
 
 const othersItems = [];
 
 const AppSidebar = () => {
+  const { t } = useTranslation();
   const { user } = useSelector((state) => state.auth);
+
   const {
     isExpanded,
     isMobileOpen,
@@ -54,9 +58,9 @@ const AppSidebar = () => {
 
     return [{
       icon: <GridIcon />,
-      name: "Dashboard",
+      name: t("DASHBOARD"),
       subItems: [{
-        name: "Ecommerce",
+        name: t("ECOMMERCE"),
         path: "/",
         pro: false
       }]
@@ -65,31 +69,32 @@ const AppSidebar = () => {
     ...(((user?.type === 3 && user?.account?.shops?.length > 0) ||
       (user?.type === 5 && user?.shop)) ? [{
         icon: <BoxCubeIcon />, // Using box icon for products
-        name: "Products",
+        name: t("PRODUCTS"),
         subItems: [{
-          name: "All Products",
+          name: t("ALL_PRODUCTS"),
           path: "/products",
           pro: false
         }, {
-          name: "Attributes",
+          name: t("ATTRIBUTES"),
           path: "/attributes",
           pro: false
         }, {
-          name: "Categories",
+          name: t("CATEGORIES"),
           path: "/categories",
           pro: false
         }]
       }] : []),
     {
       icon: <GroupIcon />,
-      name: companiesLabel,
+      name: t(companiesLabel.toUpperCase()),
       path: companiesPath
     }, {
       icon: <UserCircleIcon />,
-      name: "User Profile",
+      name: t("PROFILE"),
       path: "/profile"
     }];
-  }, [user]);
+
+  }, [user, t]);
 
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [subMenuHeight, setSubMenuHeight] = useState({});
@@ -200,8 +205,10 @@ const AppSidebar = () => {
         <div className="flex flex-col gap-4">
           <div>
             <h2 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
-              {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
+              {isExpanded || isHovered || isMobileOpen ? t("MENU") : <HorizontaLDots />}
             </h2>
+
+
             {renderMenuItems(navItems, "main")}
           </div>
 

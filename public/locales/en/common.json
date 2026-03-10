@@ -1,0 +1,25 @@
+{
+  "common": {
+    "DASHBOARD": "Dashboard",
+    "PRODUCTS": "Products",
+    "PARTNERS": "Partners",
+    "ACCOUNTS": "Accounts",
+    "SHOPS": "Shops",
+    "CUSTOMERS": "Customers",
+    "PROFILE": "Profile",
+    "SIGN_OUT": "Sign Out",
+    "SIGN_IN": "Sign In",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "KEEP_ME_LOGGED_IN": "Keep me logged in",
+    "SIGN_IN_DESC": "Enter your email and password to sign in!",
+    "GROW_BUSINESS_TAGLINE": "Grow your business with us!",
+    "SEARCH_PLACEHOLDER": "Search or type command...",
+    "ECOMMERCE": "Ecommerce",
+    "ALL_PRODUCTS": "All Products",
+    "ATTRIBUTES": "Attributes",
+    "CATEGORIES": "Categories",
+    "MENU": "Menu"
+  }
+}
