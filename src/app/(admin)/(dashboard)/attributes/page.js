@@ -62,25 +62,25 @@ const AttributeValuesModal = ({ isOpen, onClose, attribute, onAddValue, onDelete
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 border-b pb-2 mb-4">
+                            <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
                                     Manage Values: {attribute?.name}
                                 </Dialog.Title>
 
                                 {/* List Existing Values */}
                                 <div className="space-y-2 mb-6 max-h-60 overflow-y-auto">
-                                    {attribute?.values?.length === 0 && <p className="text-sm text-gray-500 italic">No values yet.</p>}
+                                    {attribute?.values?.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 italic">No values yet.</p>}
                                     {attribute?.values?.map((val) => (
-                                        <div key={val.id} className="flex justify-between items-center p-2 bg-gray-50 rounded border">
+                                        <div key={val.id} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700">
                                             <div className="flex items-center gap-2">
                                                 {attribute.type === 'color' && (
-                                                    <span className="w-4 h-4 rounded-full border" style={{ backgroundColor: val.color_code }}></span>
+                                                    <span className="w-4 h-4 rounded-full border border-gray-200 dark:border-gray-600" style={{ backgroundColor: val.color_code }}></span>
                                                 )}
-                                                <span className="text-sm font-medium">{val.value}</span>
+                                                <span className="text-sm font-medium dark:text-white/90">{val.value}</span>
                                             </div>
                                             <button
                                                 onClick={() => onDeleteValue(attribute.id, val.id)}
-                                                className="text-red-500 hover:text-red-700 p-1"
+                                                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1"
                                             >
                                                 <XMarkIcon className="h-4 w-4" />
                                             </button>
@@ -89,8 +89,8 @@ const AttributeValuesModal = ({ isOpen, onClose, attribute, onAddValue, onDelete
                                 </div>
 
                                 {/* Add New Value Form */}
-                                <form onSubmit={handleAdd} className="bg-gray-50 p-3 rounded border">
-                                    <h4 className="text-sm font-semibold mb-2">Add New Value</h4>
+                                <form onSubmit={handleAdd} className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded border border-gray-200 dark:border-gray-700">
+                                    <h4 className="text-sm font-semibold mb-2 dark:text-white/90">Add New Value</h4>
                                     <div className="flex gap-2">
                                         <div className="flex-1">
                                             <input
@@ -98,7 +98,7 @@ const AttributeValuesModal = ({ isOpen, onClose, attribute, onAddValue, onDelete
                                                 placeholder="Value (e.g., Red, XL)"
                                                 value={newValue}
                                                 onChange={(e) => setNewValue(e.target.value)}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                                                className="block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white/90 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
                                             />
                                         </div>
                                         {attribute?.type === 'color' && (
@@ -123,7 +123,7 @@ const AttributeValuesModal = ({ isOpen, onClose, attribute, onAddValue, onDelete
                                 <div className="mt-6 flex justify-end">
                                     <button
                                         type="button"
-                                        className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
+                                        className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                                         onClick={onClose}
                                     >
                                         Close
@@ -292,17 +292,17 @@ const AttributesPage = () => {
             render: (values, row) => (
                 <div className="flex flex-wrap gap-1 items-center">
                     {values?.slice(0, 3).map((v, i) => (
-                        <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 border">
+                        <span key={i} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600">
                             {row.type === 'color' && (
-                                <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: v.color_code }}></span>
+                                <span className="w-2 h-2 rounded-full mr-1 dark:border dark:border-gray-500" style={{ backgroundColor: v.color_code }}></span>
                             )}
                             {v.value}
                         </span>
                     ))}
-                    {values?.length > 3 && <span className="text-xs text-gray-500">+{values.length - 3} more</span>}
+                    {values?.length > 3 && <span className="text-xs text-gray-500 dark:text-gray-400">+{values.length - 3} more</span>}
                     <button
                         onClick={() => handleValues(row)}
-                        className="ml-1 text-blue-600 hover:text-blue-800 text-xs font-medium"
+                        className="ml-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium"
                     >
                         Manage
                     </button>
@@ -316,14 +316,14 @@ const AttributesPage = () => {
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={() => handleEdit(row)}
-                        className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                        className="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 dark:text-blue-400 rounded"
                         title="Edit"
                     >
                         <PencilSquareIcon className="h-5 w-5" />
                     </button>
                     <button
                         onClick={() => handleDeleteClick(row)}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded"
+                        className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:text-red-400 rounded"
                         title="Delete"
                     >
                         <TrashIcon className="h-5 w-5" />
@@ -348,13 +348,13 @@ const AttributesPage = () => {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Search attributes..."
-                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white/90"
                             />
                         </div>
                         <select
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
-                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:text-gray-400"
                         >
                             <option value="">All Types</option>
                             <option value="text">Text</option>

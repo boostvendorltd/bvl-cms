@@ -341,7 +341,7 @@ const ProductEditorPage = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="border-b border-gray-200">
+                <div className="border-b border-gray-200 dark:border-gray-700">
                     <nav className="flex gap-6">
                         {TABS.map((tab) => {
                             const disabled = !isEdit && tab.id !== "general";
@@ -351,10 +351,10 @@ const ProductEditorPage = () => {
                                     onClick={() => !disabled && setActiveTab(tab.id)}
                                     disabled={disabled}
                                     className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                                        ? "border-blue-600 text-blue-600"
+                                        ? "border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500"
                                         : disabled
-                                            ? "border-transparent text-gray-300 cursor-not-allowed"
-                                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                                            ? "border-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                                            : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600"
                                         }`}
                                 >
                                     {tab.label}
@@ -369,47 +369,47 @@ const ProductEditorPage = () => {
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Main form */}
                         <div className="space-y-5 lg:col-span-2">
-                            <div className="p-6 bg-white border border-gray-200 rounded-xl space-y-4">
-                                <h3 className="text-base font-semibold text-gray-900">Product Information</h3>
+                            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+                                <h3 className="text-base font-semibold text-gray-900 dark:text-white/90">Product Information</h3>
                                 <div>
-                                    <label className="block mb-1.5 text-sm font-medium text-gray-700">Name *</label>
+                                    <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Name *</label>
                                     <input
                                         type="text"
                                         value={form.name}
                                         onChange={(e) => handleChange("name", e.target.value)}
                                         placeholder="e.g., Winter Jacket"
-                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block mb-1.5 text-sm font-medium text-gray-700">Short Description</label>
+                                    <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Short Description</label>
                                     <input
                                         type="text"
                                         value={form.short_description}
                                         onChange={(e) => handleChange("short_description", e.target.value)}
                                         placeholder="Brief product summary"
                                         maxLength={500}
-                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block mb-1.5 text-sm font-medium text-gray-700">Description</label>
+                                    <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                                     <textarea
                                         value={form.description}
                                         onChange={(e) => handleChange("description", e.target.value)}
                                         rows={5}
                                         placeholder="Detailed product description..."
-                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                                     />
                                 </div>
                             </div>
 
                             {/* Pricing (default variant) */}
-                            <div className="p-6 bg-white border border-gray-200 rounded-xl space-y-4">
-                                <h3 className="text-base font-semibold text-gray-900">Pricing & Inventory</h3>
+                            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+                                <h3 className="text-base font-semibold text-gray-900 dark:text-white/90">Pricing & Inventory</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">Price</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Price</label>
                                         <div className="relative">
                                             <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2 text-sm">$</span>
                                             <input
@@ -418,12 +418,12 @@ const ProductEditorPage = () => {
                                                 value={form.price}
                                                 onChange={(e) => handleChange("price", e.target.value)}
                                                 placeholder="0.00"
-                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">Compare Price</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Compare Price</label>
                                         <div className="relative">
                                             <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2 text-sm">$</span>
                                             <input
@@ -432,12 +432,12 @@ const ProductEditorPage = () => {
                                                 value={form.compare_price}
                                                 onChange={(e) => handleChange("compare_price", e.target.value)}
                                                 placeholder="0.00"
-                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">Cost per Item</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Cost per Item</label>
                                         <div className="relative">
                                             <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2 text-sm">$</span>
                                             <input
@@ -446,38 +446,38 @@ const ProductEditorPage = () => {
                                                 value={form.cost_per_item}
                                                 onChange={(e) => handleChange("cost_per_item", e.target.value)}
                                                 placeholder="0.00"
-                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                                className="w-full py-2.5 pl-7 pr-4 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">SKU</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
                                         <input
                                             type="text"
                                             value={form.sku}
                                             onChange={(e) => handleChange("sku", e.target.value)}
                                             placeholder="Auto-generated if empty"
-                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">Quantity</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
                                         <input
                                             type="number"
                                             value={form.quantity}
                                             onChange={(e) => handleChange("quantity", parseInt(e.target.value) || 0)}
-                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-1.5 text-sm font-medium text-gray-700">Weight (kg)</label>
+                                        <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Weight (kg)</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             value={form.weight}
                                             onChange={(e) => handleChange("weight", e.target.value)}
                                             placeholder="0.00"
-                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                            className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                         />
                                     </div>
                                 </div>
@@ -487,12 +487,12 @@ const ProductEditorPage = () => {
                         {/* Sidebar */}
                         <div className="space-y-5">
                             {/* Status */}
-                            <div className="p-5 bg-white border border-gray-200 rounded-xl space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-900">Status</h3>
+                            <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-3">
+                                <h3 className="text-sm font-semibold text-gray-900 dark:text-white/90">Status</h3>
                                 <select
                                     value={form.status}
                                     onChange={(e) => handleChange("status", parseInt(e.target.value))}
-                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 >
                                     <option value={1}>Active</option>
                                     <option value={0}>Inactive</option>
@@ -501,14 +501,14 @@ const ProductEditorPage = () => {
                             </div>
 
                             {/* Categories */}
-                            <div className="p-5 bg-white border border-gray-200 rounded-xl space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-900">Categories</h3>
+                            <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-3">
+                                <h3 className="text-sm font-semibold text-gray-900 dark:text-white/90">Categories</h3>
                                 <div className="space-y-2 max-h-48 overflow-y-auto">
                                     {flatCategories.length === 0 ? (
                                         <p className="text-xs text-gray-400">No categories found.</p>
                                     ) : (
                                         flatCategories.map((cat) => (
-                                            <label key={cat.id} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                            <label key={cat.id} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     checked={form.category_ids.includes(cat.id)}
@@ -526,15 +526,15 @@ const ProductEditorPage = () => {
                             </div>
 
                             {/* Attributes */}
-                            <div className="p-5 bg-white border border-gray-200 rounded-xl space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-900">Attributes</h3>
+                            <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-3">
+                                <h3 className="text-sm font-semibold text-gray-900 dark:text-white/90">Attributes</h3>
                                 <p className="text-xs text-gray-400">Select attributes to enable variant generation.</p>
                                 <div className="space-y-2 max-h-48 overflow-y-auto">
                                     {attributes.length === 0 ? (
                                         <p className="text-xs text-gray-400">No attributes found.</p>
                                     ) : (
                                         attributes.map((attr) => (
-                                            <label key={attr.id} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                                            <label key={attr.id} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                                                 <input
                                                     type="checkbox"
                                                     checked={form.attribute_ids.includes(attr.id)}
@@ -556,10 +556,10 @@ const ProductEditorPage = () => {
                 {activeTab === "variants" && isEdit && (
                     <div className="space-y-5">
                         {/* Generator */}
-                        <div className="p-6 bg-white border border-gray-200 rounded-xl space-y-4">
+                        <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-base font-semibold text-gray-900">Variant Generator</h3>
+                                    <h3 className="text-base font-semibold text-gray-900 dark:text-white/90">Variant Generator</h3>
                                     <p className="text-sm text-gray-500">Select attribute values to generate variant combinations.</p>
                                 </div>
                                 <button
@@ -581,7 +581,7 @@ const ProductEditorPage = () => {
                                         <>
                                             {availableAttributes.map((attr) => (
                                                 <div key={attr.id} className="space-y-2">
-                                                    <label className="text-sm font-medium text-gray-700">{attr.name}</label>
+                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{attr.name}</label>
                                                     <div className="flex flex-wrap gap-2">
                                                         {attr.values?.map((val) => {
                                                             const selected = (selectedGenAttrs[attr.id] || []).includes(val.id);
@@ -591,7 +591,7 @@ const ProductEditorPage = () => {
                                                                     onClick={() => handleGenAttrValueToggle(attr.id, val.id)}
                                                                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-colors ${selected
                                                                         ? "bg-blue-600 text-white border-blue-600"
-                                                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                                                                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
                                                                         }`}
                                                                 >
                                                                     {val.color_code && (
@@ -610,23 +610,23 @@ const ProductEditorPage = () => {
 
                                             <div className="grid grid-cols-2 gap-4 pt-3">
                                                 <div>
-                                                    <label className="block mb-1 text-sm font-medium text-gray-700">Default Price</label>
+                                                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Default Price</label>
                                                     <input
                                                         type="number"
                                                         step="0.01"
                                                         value={genDefaults.price}
                                                         onChange={(e) => setGenDefaults((p) => ({ ...p, price: e.target.value }))}
                                                         placeholder="0.00"
-                                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block mb-1 text-sm font-medium text-gray-700">Default Quantity</label>
+                                                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Default Quantity</label>
                                                     <input
                                                         type="number"
                                                         value={genDefaults.quantity}
                                                         onChange={(e) => setGenDefaults((p) => ({ ...p, quantity: e.target.value }))}
-                                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             </div>
@@ -645,7 +645,7 @@ const ProductEditorPage = () => {
                         </div>
 
                         {/* Existing Variants Table */}
-                        <div className="p-6 bg-white border border-gray-200 rounded-xl space-y-4">
+                        <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-base font-semibold text-gray-900">
                                     Variants ({productVariants.length})
@@ -667,28 +667,28 @@ const ProductEditorPage = () => {
                                 </p>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full text-sm divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
+                                    <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead className="bg-gray-50 dark:bg-gray-900/50">
                                             <tr>
-                                                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">Variant</th>
-                                                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase">SKU</th>
-                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Price</th>
-                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Qty</th>
-                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase">Weight</th>
-                                                <th className="px-3 py-2 text-center text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                                                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Variant</th>
+                                                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">SKU</th>
+                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Price</th>
+                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Qty</th>
+                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Weight</th>
+                                                <th className="px-3 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100">
+                                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                             {productVariants.map((v) => {
                                                 const edits = variantEdits[v.id] || {};
                                                 return (
-                                                    <tr key={v.id} className="hover:bg-gray-50/50">
+                                                    <tr key={v.id} className="hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
                                                         <td className="px-3 py-2">
                                                             <div className="flex items-center gap-2">
                                                                 {v.is_default && (
                                                                     <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Default</span>
                                                                 )}
-                                                                <span className="font-medium text-gray-800">{getVariantLabel(v)}</span>
+                                                                <span className="font-medium text-gray-800 dark:text-gray-200">{getVariantLabel(v)}</span>
                                                             </div>
                                                         </td>
                                                         <td className="px-3 py-2">
@@ -696,7 +696,7 @@ const ProductEditorPage = () => {
                                                                 type="text"
                                                                 defaultValue={v.sku}
                                                                 onChange={(e) => handleVariantFieldChange(v.id, "sku", e.target.value)}
-                                                                className="w-32 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                                className="w-32 px-2 py-1 text-xs border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
                                                             />
                                                         </td>
                                                         <td className="px-3 py-2 text-right">
@@ -705,7 +705,7 @@ const ProductEditorPage = () => {
                                                                 step="0.01"
                                                                 defaultValue={v.price}
                                                                 onChange={(e) => handleVariantFieldChange(v.id, "price", parseFloat(e.target.value))}
-                                                                className="w-24 px-2 py-1 text-xs text-right border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                                className="w-24 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
                                                             />
                                                         </td>
                                                         <td className="px-3 py-2 text-right">
@@ -713,7 +713,7 @@ const ProductEditorPage = () => {
                                                                 type="number"
                                                                 defaultValue={v.quantity}
                                                                 onChange={(e) => handleVariantFieldChange(v.id, "quantity", parseInt(e.target.value))}
-                                                                className="w-20 px-2 py-1 text-xs text-right border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                                className="w-20 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
                                                             />
                                                         </td>
                                                         <td className="px-3 py-2 text-right">
@@ -722,7 +722,7 @@ const ProductEditorPage = () => {
                                                                 step="0.01"
                                                                 defaultValue={v.weight || ""}
                                                                 onChange={(e) => handleVariantFieldChange(v.id, "weight", parseFloat(e.target.value))}
-                                                                className="w-20 px-2 py-1 text-xs text-right border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                                className="w-20 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
                                                             />
                                                         </td>
                                                         <td className="px-3 py-2 text-center">
@@ -748,17 +748,17 @@ const ProductEditorPage = () => {
                 {/* ===== TAB: MEDIA ===== */}
                 {activeTab === "media" && isEdit && (
                     <div className="space-y-5">
-                        <div className="p-6 bg-white border border-gray-200 rounded-xl space-y-4">
-                            <h3 className="text-base font-semibold text-gray-900">Product Images</h3>
+                        <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
+                            <h3 className="text-base font-semibold text-gray-900 dark:text-white/90">Product Images</h3>
 
                             {/* Upload Drop Zone */}
                             <div
                                 onClick={() => fileInputRef.current?.click()}
-                                className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+                                className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-blue-400 dark:hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-500/10 transition-colors"
                             >
                                 <PhotoIcon className="w-10 h-10 text-gray-400" />
                                 <div className="text-center">
-                                    <p className="text-sm font-medium text-gray-700">Click to upload images</p>
+                                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload images</p>
                                     <p className="text-xs text-gray-400">JPEG, PNG, WebP — max 5MB each</p>
                                 </div>
                                 <input

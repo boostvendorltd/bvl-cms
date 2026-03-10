@@ -19,6 +19,9 @@ export default function RootLayout({
           containerStyle={{
             zIndex: 100000,
           }}
+          toastOptions={{
+            className: 'dark:bg-gray-800 dark:text-white',
+          }}
         />
         <ThemeProvider>
           <SidebarProvider>{children}</SidebarProvider>

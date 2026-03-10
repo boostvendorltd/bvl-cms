@@ -178,13 +178,13 @@ const ProductsPage = () => {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Search products..."
-                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white/90"
                             />
                         </div>
                         <select
                             value={statusFilter}
                             onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:text-gray-400"
                         >
                             <option value="">All Status</option>
                             <option value="1">Active</option>
@@ -226,10 +226,10 @@ const ProductsPage = () => {
                 </div>
 
                 {/* Table */}
-                <div className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm">
+                <div className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead className="bg-gray-50 dark:bg-gray-900/50">
                                 <tr>
                                     <th className="w-12 px-4 py-3">
                                         <input
@@ -239,14 +239,14 @@ const ProductsPage = () => {
                                             className="w-4 h-4 text-blue-600 rounded border-gray-300"
                                         />
                                     </th>
-                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Product</th>
-                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Status</th>
-                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 uppercase">Category</th>
-                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">Price</th>
-                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-center text-gray-500 uppercase">Actions</th>
+                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 dark:text-gray-400 uppercase">Product</th>
+                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left text-gray-500 dark:text-gray-400 uppercase">Category</th>
+                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-right text-gray-500 dark:text-gray-400 uppercase">Price</th>
+                                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-center text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                 {loading ? (
                                     <tr>
                                         <td colSpan={6} className="px-4 py-12 text-center text-gray-400">
@@ -270,7 +270,7 @@ const ProductsPage = () => {
                                         const status = STATUS_MAP[product.status] || STATUS_MAP[0];
                                         const imgPath = getPrimaryImage(product);
                                         return (
-                                            <tr key={product.id} className="transition-colors hover:bg-gray-50/50">
+                                            <tr key={product.id} className="transition-colors hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
                                                 <td className="px-4 py-3">
                                                     <input
                                                         type="checkbox"
@@ -281,7 +281,7 @@ const ProductsPage = () => {
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="relative flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 rounded-lg">
+                                                        <div className="relative flex-shrink-0 w-10 h-10 overflow-hidden bg-gray-100 dark:bg-gray-700 rounded-lg">
                                                             {imgPath ? (
                                                                 <AppImage
                                                                     src={getImageUrl(imgPath)}
@@ -290,7 +290,7 @@ const ProductsPage = () => {
                                                                     className="object-cover"
                                                                 />
                                                             ) : (
-                                                                <div className="flex items-center justify-center w-full h-full text-gray-400">
+                                                                <div className="flex items-center justify-center w-full h-full text-gray-400 dark:text-gray-500">
                                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                                                                     </svg>
@@ -298,9 +298,9 @@ const ProductsPage = () => {
                                                             )}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-white/90">{product.name}</p>
                                                             {product.short_description && (
-                                                                <p className="text-xs text-gray-500 line-clamp-1">{product.short_description}</p>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{product.short_description}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -313,39 +313,39 @@ const ProductsPage = () => {
                                                 <td className="px-4 py-3">
                                                     <div className="flex flex-wrap gap-1">
                                                         {product.categories?.slice(0, 2).map((cat) => (
-                                                            <span key={cat.id} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-md">
+                                                            <span key={cat.id} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 rounded-md">
                                                                 {cat.name}
                                                             </span>
                                                         ))}
                                                         {product.categories?.length > 2 && (
-                                                            <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-500 rounded-md">
+                                                            <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 rounded-md">
                                                                 +{product.categories.length - 2}
                                                             </span>
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm font-medium text-right text-gray-900">
+                                                <td className="px-4 py-3 text-sm font-medium text-right text-gray-900 dark:text-white/90">
                                                     ${getPrice(product)}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center justify-center gap-1">
                                                         <button
                                                             onClick={() => router.push(`/products/${product.id}`)}
-                                                            className="p-1.5 text-gray-400 rounded-md hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 dark:hover:text-blue-400 transition-colors rounded-md"
                                                             title="Edit"
                                                         >
                                                             <PencilSquareIcon className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDuplicate(product.id)}
-                                                            className="p-1.5 text-gray-400 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 transition-colors rounded-md"
                                                             title="Duplicate"
                                                         >
                                                             <DocumentDuplicateIcon className="w-4 h-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => setDeleteTarget(product)}
-                                                            className="p-1.5 text-gray-400 rounded-md hover:text-red-600 hover:bg-red-50 transition-colors"
+                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors rounded-md"
                                                             title="Delete"
                                                         >
                                                             <TrashIcon className="w-4 h-4" />
@@ -362,22 +362,22 @@ const ProductsPage = () => {
 
                     {/* Pagination */}
                     {pagination.last_page > 1 && (
-                        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
-                            <p className="text-sm text-gray-500">
+                        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Page {pagination.current_page} of {pagination.last_page} ({pagination.total} items)
                             </p>
                             <div className="flex items-center gap-1">
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
-                                    className="p-1.5 text-gray-500 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="p-1.5 text-gray-500 dark:text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                     <ChevronLeftIcon className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.min(pagination.last_page, p + 1))}
                                     disabled={currentPage === pagination.last_page}
-                                    className="p-1.5 text-gray-500 rounded-md hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                                    className="p-1.5 text-gray-500 dark:text-gray-400 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                     <ChevronRightIcon className="w-4 h-4" />
                                 </button>

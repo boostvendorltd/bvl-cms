@@ -81,21 +81,20 @@ export default function HierarchyTable({
                                         }
 
                                         // Special handling for Name Column -> Clickable for Navigation / Drill-down
-                                        // We assume the column looking for is 'name' or has a flag
                                         if (col.isLink) {
                                             return (
-                                                <TableCell key={colIndex} className="px-5 py-4 sm:px-6 text-start">
+                                                <TableCell key={colIndex} className="p-0 text-start">
                                                     <Link
                                                         href={col.getLink(row)}
-                                                        className="font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:underline hover:text-brand-500"
+                                                        className="block px-5 py-4 sm:px-6 font-medium text-gray-800 text-theme-sm dark:text-white/90 hover:underline hover:text-brand-500 w-full h-full transition-colors hover:bg-gray-50 dark:hover:bg-white/5"
                                                     >
                                                         {value}
+                                                        {col.subtitleAccessor && (
+                                                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400 font-normal">
+                                                                {row[col.subtitleAccessor]}
+                                                            </span>
+                                                        )}
                                                     </Link>
-                                                    {col.subtitleAccessor && (
-                                                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                                            {row[col.subtitleAccessor]}
-                                                        </span>
-                                                    )}
                                                 </TableCell>
                                             );
                                         }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 import axios from "@/utils/api";
 
 const AddShopModal = ({ isOpen, onClose, onSave }) => {
@@ -10,7 +11,7 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
         unique_domain: "",
         type_id: "",
         monthly_cost: 0,
-        contract_status: "1", // Default Pending
+        contract_status: "1",
         email: "",
         password: "",
         register_date: new Date().toISOString().split('T')[0],
@@ -54,7 +55,6 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
         }
     }, [isOpen]);
 
-    // Auto-calculate End Date
     useEffect(() => {
         if (formData.contract_start && formData.contract_update_interval) {
             try {
@@ -79,15 +79,27 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const formatError = (err) => {
+        if (typeof err === "string") return err;
+        if (err?.errors) {
+            const errors = Object.values(err.errors).flat();
+            return errors.length > 0 ? errors.join(", ") : (err.message || "An error occurred");
+        }
+        return err?.message || "An error occurred";
+    };
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setLoading(true);
         setError("");
         try {
             await onSave(formData);
+            toast.success("Shop created successfully");
             onClose();
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to create shop");
+            const errMessage = formatError(err);
+            setError(errMessage);
+            toast.error(errMessage);
         } finally {
             setLoading(false);
         }
@@ -119,10 +131,9 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
-                                {/* Header */}
-                                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                                    <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900">
+                            <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+                                    <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900 dark:text-white">
                                         Add New Shop
                                     </Dialog.Title>
                                     <button
@@ -133,49 +144,48 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                     </button>
                                 </div>
 
-                                {/* Form */}
                                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
                                     {error && (
-                                        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100">
+                                        <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-500/20">
                                             {error}
                                         </div>
                                     )}
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Shop Name *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shop Name *</label>
                                         <input
                                             type="text"
                                             name="name"
                                             value={formData.name}
                                             onChange={handleChange}
                                             required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             placeholder="My Store"
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Domain URL *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Domain URL *</label>
                                             <input
                                                 type="text"
                                                 name="domain_url"
                                                 value={formData.domain_url}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 placeholder="mystore.com"
                                             />
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Unique Domain ID *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unique Domain ID *</label>
                                             <input
                                                 type="text"
                                                 name="unique_domain"
                                                 value={formData.unique_domain}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 placeholder="mystore"
                                             />
                                         </div>
@@ -183,14 +193,14 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Shop Type *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shop Type *</label>
                                             <select
                                                 name="type_id"
                                                 value={formData.type_id}
                                                 onChange={handleChange}
                                                 required
                                                 disabled={fetchingTypes}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             >
                                                 <option value="">Select Type</option>
                                                 {shopTypes.map((type) => (
@@ -201,40 +211,39 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Cost ($)</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Cost ($)</label>
                                             <input
                                                 type="number"
                                                 name="monthly_cost"
                                                 value={formData.monthly_cost}
                                                 onChange={handleChange}
                                                 step="0.01"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Register Date</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Register Date</label>
                                             <input
                                                 type="date"
                                                 name="register_date"
                                                 value={formData.register_date}
                                                 onChange={handleChange}
                                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             />
                                         </div>
                                     </div>
 
-                                    {/* Contract Details */}
-                                    <div className="border-t border-gray-100 pt-4 mt-6">
-                                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Contract Details</h4>
+                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-6">
+                                        <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Contract Details</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Contract Status</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contract Status</label>
                                                 <select
                                                     name="contract_status"
                                                     value={formData.contract_status}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 >
                                                     <option value="1">Pending</option>
                                                     <option value="0">Agreement</option>
@@ -243,103 +252,102 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Update Interval (Months)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Update Interval (Months)</label>
                                                 <input
                                                     type="number"
                                                     name="contract_update_interval"
                                                     value={formData.contract_update_interval}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
                                                 <input
                                                     type="date"
                                                     name="contract_start"
                                                     value={formData.contract_start}
                                                     onChange={handleChange}
                                                     onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
                                                 <input
                                                     type="date"
                                                     name="contract_end"
                                                     value={formData.contract_end}
                                                     onChange={handleChange}
                                                     onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Financials */}
-                                    <div className="border-t border-gray-100 pt-4 mt-6">
-                                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Financials</h4>
+                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-6">
+                                        <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Financials</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Initial Cost ($)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Cost ($)</label>
                                                 <input
                                                     type="number"
                                                     name="initial_cost"
                                                     value={formData.initial_cost}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Cost ($)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Cost ($)</label>
                                                 <input
                                                     type="number"
                                                     name="monthly_cost"
                                                     value={formData.monthly_cost}
                                                     onChange={handleChange}
                                                     step="0.01"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Initial Transfer ($)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Transfer ($)</label>
                                                 <input
                                                     type="number"
                                                     name="initial_transfer_amount"
                                                     value={formData.initial_transfer_amount}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Transfer ($)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Transfer ($)</label>
                                                 <input
                                                     type="number"
                                                     name="monthly_transfer_amount"
                                                     value={formData.monthly_transfer_amount}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Commission Rate (%)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commission Rate (%)</label>
                                                 <input
                                                     type="number"
                                                     name="commission_rate"
                                                     value={formData.commission_rate}
                                                     onChange={handleChange}
                                                     step="0.01"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
                                                 <select
                                                     name="payment_method"
                                                     value={formData.payment_method}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 >
                                                     <option value="0">Bank Transfer</option>
                                                     <option value="1">Cash</option>
@@ -349,48 +357,47 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                         </div>
                                     </div>
 
-                                    {/* Contact & Location */}
-                                    <div className="border-t border-gray-100 pt-4 mt-6">
-                                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Contact & Location</h4>
+                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-6">
+                                        <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Contact & Location</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                                                 <input
                                                     type="text"
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Representative</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Representative</label>
                                                 <input
                                                     type="text"
                                                     name="shop_representative"
                                                     value={formData.shop_representative}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Address 1</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address 1</label>
                                                 <input
                                                     type="text"
                                                     name="address_1"
                                                     value={formData.address_1}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Address 2 (Optional)</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address 2 (Optional)</label>
                                                 <input
                                                     type="text"
                                                     name="address_2"
                                                     value={formData.address_2}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                 />
                                             </div>
                                             <div className="flex items-center gap-6 mt-2">
@@ -402,7 +409,7 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                         onChange={(e) => setFormData(prev => ({ ...prev, is_whatsapp: e.target.checked }))}
                                                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                                     />
-                                                    <span className="text-sm text-gray-700">WhatsApp</span>
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300">WhatsApp</span>
                                                 </label>
                                                 <label className="flex items-center gap-2 cursor-pointer">
                                                     <input
@@ -410,62 +417,62 @@ const AddShopModal = ({ isOpen, onClose, onSave }) => {
                                                         name="is_telegram"
                                                         checked={formData.is_telegram}
                                                         onChange={(e) => setFormData(prev => ({ ...prev, is_telegram: e.target.checked }))}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
                                                     />
-                                                    <span className="text-sm text-gray-700">Telegram</span>
+                                                    <span className="text-sm text-gray-700 dark:text-gray-300">Telegram</span>
                                                 </label>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="border-t border-gray-100 pt-4 mt-6">
-                                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Owner Credentials</h4>
+                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-6">
+                                        <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Owner Credentials</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Owner Email *</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Owner Email *</label>
                                                 <input
                                                     type="email"
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleChange}
                                                     required
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                     placeholder="owner@example.com"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
                                                 <input
                                                     type="password"
                                                     name="password"
                                                     value={formData.password}
                                                     onChange={handleChange}
                                                     required
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                                     placeholder="Min 8 characters"
                                                 />
                                             </div>
                                         </div>
                                     </div>
-                                </form>
 
-                                {/* Footer */}
-                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3">
-                                    <button
-                                        onClick={onClose}
-                                        disabled={loading}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleSubmit}
-                                        disabled={loading}
-                                        className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
-                                    >
-                                        {loading ? "Creating..." : "Create Shop"}
-                                    </button>
-                                </div>
+                                    <div className="px-0 py-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-3 mt-6">
+                                        <button
+                                            type="button"
+                                            onClick={onClose}
+                                            disabled={loading}
+                                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
+                                        >
+                                            {loading ? "Creating..." : "Create Shop"}
+                                        </button>
+                                    </div>
+                                </form>
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>

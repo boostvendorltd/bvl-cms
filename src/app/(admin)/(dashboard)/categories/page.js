@@ -30,7 +30,7 @@ const CategoryItem = ({ category, level = 0, onEdit, onDelete, hasChildren, isEx
     return (
         <div
             className={`
-                grid grid-cols-12 gap-4 items-center p-4 border-b border-gray-100 last:border-b-0
+                grid grid-cols-12 gap-4 items-center p-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0
                 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors
                 ${isSelected ? 'bg-blue-50 dark:bg-blue-900/10' : ''}
             `}
@@ -54,7 +54,7 @@ const CategoryItem = ({ category, level = 0, onEdit, onDelete, hasChildren, isEx
                                 e.stopPropagation();
                                 onToggleExpand(category.id);
                             }}
-                            className="p-1 hover:bg-gray-200 rounded text-gray-500 flex-shrink-0"
+                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 flex-shrink-0"
                         >    {isExpanded ? <ChevronDownIcon className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
                         </button>
                     ) : (
@@ -65,31 +65,31 @@ const CategoryItem = ({ category, level = 0, onEdit, onDelete, hasChildren, isEx
                             <AppImage src={getImageUrl(category?.image)} alt={category?.name} fill className="object-cover" />
                         </div>
                     )}
-                    <span className="font-medium text-gray-800 text-sm truncate" title={category?.name}>{category?.name}</span>
+                    <span className="font-medium text-gray-800 dark:text-white/90 text-sm truncate" title={category?.name}>{category?.name}</span>
                 </div>
             </div>
 
             {/* Other columns shifted */}
             <div className="col-span-3">
-                <p className="text-gray-500 text-sm line-clamp-2" title={category?.description}>{category?.description}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2" title={category?.description}>{category?.description}</p>
             </div>
             <div className="col-span-2">
-                <p className="text-gray-500 text-sm line-clamp-1" title={category?.note}>{category?.note}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-1" title={category?.note}>{category?.note}</p>
             </div>
             <div className="col-span-1 text-center">
                 <div className="flex items-center gap-2 justify-center">
                     {category?.status === 1 ? (
-                        <span className="text-green-600 font-medium text-xs bg-green-50 px-2 py-0.5 rounded">Active</span>
+                        <span className="text-green-600 dark:text-green-500 font-medium text-xs bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded">Active</span>
                     ) : (
-                        <span className="text-red-600 font-medium text-xs bg-red-50 px-2 py-0.5 rounded">Inactive</span>
+                        <span className="text-red-600 dark:text-red-500 font-medium text-xs bg-red-50 dark:bg-red-500/10 px-2 py-0.5 rounded">Inactive</span>
                     )}
                 </div>
             </div>
             <div className="col-span-2 flex justify-end gap-2">
-                <button onClick={() => onEdit(category)} className="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Edit">
+                <button onClick={() => onEdit(category)} className="p-1 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10 rounded" title="Edit">
                     <PencilSquareIcon className="h-5 w-5" />
                 </button>
-                <button onClick={() => onDelete(category)} className="p-1 text-red-600 hover:bg-red-50 rounded" title="Delete">
+                <button onClick={() => onDelete(category)} className="p-1 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10 rounded" title="Delete">
                     <TrashIcon className="h-5 w-5" />
                 </button>
             </div>
@@ -347,13 +347,13 @@ const CategoriesPage = () => {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Search categories..."
-                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white/90"
                             />
                         </div>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:text-gray-400"
                         >
                             <option value="">All Status</option>
                             <option value="1">Active</option>
@@ -383,9 +383,9 @@ const CategoriesPage = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     {/* Header Row */}
-                    <div className="grid grid-cols-12 gap-4 p-4 border-b border-gray-200 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider items-center">
+                    <div className="grid grid-cols-12 gap-4 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider items-center">
                         <div className="col-span-1 flex justify-center">
                             <input
                                 type="checkbox"

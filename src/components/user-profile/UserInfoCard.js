@@ -154,16 +154,7 @@ export default function UserInfoCard() {
   };
 
   const timezones = [
-    "UTC",
-    "America/New_York",
-    "America/Chicago",
-    "America/Denver",
-    "America/Los_Angeles",
-    "Europe/London",
-    "Europe/Paris",
-    "Asia/Tokyo",
     "Asia/Dhaka",
-    "Australia/Sydney"
   ];
 
   /* 
@@ -463,15 +454,15 @@ export default function UserInfoCard() {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
+              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                  <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800">
+                  <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900 dark:text-white">
                     Edit Profile
                   </Dialog.Title>
                   <button
                     onClick={closeModal}
-                    className="p-2 text-gray-400 transition-colors rounded-full hover:bg-gray-200 hover:text-gray-600"
+                    className="p-2 text-gray-400 transition-colors rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200"
                   >
                     <XMarkIcon className="w-6 h-6" />
                   </button>
@@ -521,7 +512,7 @@ export default function UserInfoCard() {
 
                         <div className="col-span-2 lg:col-span-1">
                           <Label>Date of Birth</Label>
-                          <Input type="date" name="dob" value={formData.dob} onChange={handleChange} />
+                          <Input type="date" name="dob" value={formData.dob} onChange={handleChange} className="dark:[color-scheme:dark]" />
                         </div>
 
                         <div className="col-span-2 lg:col-span-1">
@@ -655,7 +646,7 @@ export default function UserInfoCard() {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3 mt-auto">
+                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-3 mt-auto">
                   <Button size="sm" variant="outline" onClick={closeModal} type="button">
                     Cancel
                   </Button>
