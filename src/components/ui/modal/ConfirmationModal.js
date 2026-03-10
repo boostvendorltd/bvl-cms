@@ -54,18 +54,18 @@ const ConfirmationModal = ({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all border border-gray-200 dark:border-gray-700">
                                 <div className="p-6">
                                     <div className="flex items-start gap-4">
-                                        <div className={`flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full ${type === 'danger' ? 'bg-red-100' : type === 'warning' ? 'bg-yellow-100' : 'bg-blue-100'}`}>
+                                        <div className={`flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full ${type === 'danger' ? 'bg-red-100 dark:bg-red-900/40' : type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/40' : 'bg-blue-100 dark:bg-blue-900/40'}`}>
                                             {getIcon()}
                                         </div>
                                         <div className="mt-1">
-                                            <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                            <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-white/90">
                                                 {title}
                                             </Dialog.Title>
                                             <div className="mt-2">
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     {message}
                                                 </p>
                                             </div>
@@ -73,7 +73,7 @@ const ConfirmationModal = ({
                                     </div>
                                 </div>
 
-                                <div className="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3">
+                                <div className="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex flex-row-reverse gap-3">
                                     <button
                                         type="button"
                                         className={`inline-flex w-full justify-center rounded-lg px-3 py-2 text-sm font-semibold text-white shadow-sm sm:w-auto ${getButtonColor()} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -84,7 +84,7 @@ const ConfirmationModal = ({
                                     </button>
                                     <button
                                         type="button"
-                                        className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                        className="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
                                         onClick={onClose}
                                         disabled={isLoading}
                                     >

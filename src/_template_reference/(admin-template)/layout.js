@@ -33,7 +33,7 @@ export default function AdminLayout({
   }, [isAuthenticated, user, dispatch, router]);
 
   if (isLoading || !isAuthenticated) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen dark:text-white">Loading...</div>;
   }
   const mainContentMargin = isMobileOpen ? "ml-0" : isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]";
   return <div className="min-h-screen xl:flex">

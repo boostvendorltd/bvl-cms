@@ -46,7 +46,7 @@ const RouteGuard = ({ children, allowedRoles, requireShop = false }) => {
     }, [user, isLoading, router, allowedRoles]);
 
     if (isLoading || !authorized) {
-        return <div className="flex items-center justify-center h-screen">Loading...</div>;
+        return <div className="flex items-center justify-center h-screen dark:text-white">Loading...</div>;
     }
 
     return children;

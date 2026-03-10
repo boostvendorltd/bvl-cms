@@ -37,7 +37,7 @@ const RoleGuard = ({ children, allowedRoles }) => {
     }, [user, isLoading, allowedRoles, router]);
 
     if (isLoading || !user) {
-        return <div className="flex items-center justify-center min-h-screen">Loading...</div>; // Or a spinner
+        return <div className="flex items-center justify-center min-h-screen dark:text-white">Loading...</div>; // Or a spinner
     }
 
     return children;
