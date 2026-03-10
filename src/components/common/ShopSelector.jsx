@@ -42,7 +42,8 @@ const ShopSelector = () => {
                     // TODO: Implement partner shop selection
                 } else if (user.role === 'root' || user.role === 'administrator') {
                     const response = await api.get(`/cms/all-shops`);
-                    availableShops = response.data.data || [];
+                    // getAllShops returns a flat array, not paginated
+                    availableShops = Array.isArray(response.data) ? response.data : (response.data.data || []);
                 }
 
                 setShops(availableShops);

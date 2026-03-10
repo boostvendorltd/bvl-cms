@@ -16,7 +16,6 @@ import ConfirmationModal from "@/components/ui/modal/ConfirmationModal";
 import { PencilSquareIcon, TrashIcon, ChevronRightIcon, ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import AppImage from "@/components/ui/AppImage";
-import ProductGuard from "@/components/auth/ProductGuard";
 
 const getImageUrl = (path) => {
     if (!path) return null;

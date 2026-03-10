@@ -21,6 +21,14 @@ export default function UserInfoCard() {
     closeModal
   } = useModal();
 
+  const userType = Number(user?.type);
+  const isRoot = userType === 0;
+  const isCustomer = userType === 1;
+  const isPartner = userType === 2;
+  const isAccount = userType === 3;
+  const isAdmin = userType === 4;
+  const isShop = userType === 5;
+
   // File upload state
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -39,7 +47,27 @@ export default function UserInfoCard() {
     twitter: "",
     linkedin: "",
     instagram: "",
-    github: ""
+    github: "",
+    // Partner fields
+    partner_name: "",
+    partner_email: "",
+    partner_phone: "",
+    partner_address_1: "",
+    partner_address_2: "",
+    partner_note: "",
+    // Account fields
+    account_name: "",
+    account_email: "",
+    account_phone: "",
+    account_representative: "",
+    account_address_1: "",
+    account_address_2: "",
+    account_note: "",
+    // Shop fields
+    shop_name: "",
+    shop_phone: "",
+    shop_representative: "",
+    shop_note: "",
   });
 
   // Load user data into form when modal opens
@@ -57,7 +85,27 @@ export default function UserInfoCard() {
         twitter: user.twitter || "",
         linkedin: user.linkedin || "",
         instagram: user.instagram || "",
-        github: user.github || ""
+        github: user.github || "",
+        // Partner fields
+        partner_name: user.partner?.name || "",
+        partner_email: user.partner?.email || "",
+        partner_phone: user.partner?.phone || "",
+        partner_address_1: user.partner?.address_1 || "",
+        partner_address_2: user.partner?.address_2 || "",
+        partner_note: user.partner?.note || "",
+        // Account fields
+        account_name: user.account?.name || "",
+        account_email: user.account?.email || "",
+        account_phone: user.account?.phone || "",
+        account_representative: user.account?.account_representative || "",
+        account_address_1: user.account?.address_1 || "",
+        account_address_2: user.account?.address_2 || "",
+        account_note: user.account?.note || "",
+        // Shop fields
+        shop_name: user.shop?.name || "",
+        shop_phone: user.shop?.phone || "",
+        shop_representative: user.shop?.shop_representative || "",
+        shop_note: user.shop?.note || "",
       });
       setPreviewUrl(user.avatar || "/images/user/default.jpg");
       setSelectedFile(null);
@@ -156,9 +204,14 @@ export default function UserInfoCard() {
             </p>
           </div>
           <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-              {user.role || "User"}
-            </p>
+            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${isRoot || isAdmin ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20' :
+              isPartner ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' :
+                isAccount ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' :
+                  isShop ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' :
+                    'bg-gray-50 text-gray-600 border-gray-100'
+              }`}>
+              {user.role}
+            </span>
             <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {user.email}
@@ -259,8 +312,12 @@ export default function UserInfoCard() {
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Company/Partner Name</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Company/Business Name</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.name || "N/A"}</p>
+          </div>
+          <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Phone</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.phone || "N/A"}</p>
           </div>
           <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Commission Rate</p>
@@ -275,10 +332,6 @@ export default function UserInfoCard() {
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">
               {user.partner.address_1 || user.partner.address_2 ? `${user.partner.address_1 || ''} ${user.partner.address_2 || ''}` : "N/A"}
             </p>
-          </div>
-          <div className="col-span-1 lg:col-span-2">
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Notes</p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.note || "N/A"}</p>
           </div>
         </div>
       </div>
@@ -301,6 +354,10 @@ export default function UserInfoCard() {
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.name || "N/A"}</p>
           </div>
           <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Phone</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.phone || "N/A"}</p>
+          </div>
+          <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Representative</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.account_representative || "N/A"}</p>
           </div>
@@ -309,10 +366,6 @@ export default function UserInfoCard() {
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">
               {user.account.address_1 || user.account.address_2 ? `${user.account.address_1 || ''} ${user.account.address_2 || ''}` : "N/A"}
             </p>
-          </div>
-          <div className="col-span-1 lg:col-span-2">
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Notes</p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.note || "N/A"}</p>
           </div>
         </div>
       </div>
@@ -501,29 +554,100 @@ export default function UserInfoCard() {
                           </select>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Social Links Section in Form */}
-                      <div className="mt-8">
+                    {/* Role-Specific Business Information in Modal */}
+                    {(isPartner || isAccount || isShop) && (
+                      <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-8">
                         <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                          Social Links
+                          {isPartner ? 'Partner Information' : isAccount ? 'Account Information' : 'Shop Information'}
                         </h5>
+
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                          <div>
-                            <Label>Facebook</Label>
-                            <Input type="text" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/username" />
-                          </div>
-                          <div>
-                            <Label>X.com (Twitter)</Label>
-                            <Input type="text" name="twitter" value={formData.twitter} onChange={handleChange} placeholder="https://x.com/username" />
-                          </div>
-                          <div>
-                            <Label>Linkedin</Label>
-                            <Input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/username" />
-                          </div>
-                          <div>
-                            <Label>Instagram</Label>
-                            <Input type="text" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/username" />
-                          </div>
+                          {/* Partner Specific Fields */}
+                          {isPartner && (
+                            <>
+                              <div className="col-span-2">
+                                <Label>Company/Business Name</Label>
+                                <Input type="text" name="partner_name" value={formData.partner_name} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2">
+                                <Label>Business Phone</Label>
+                                <Input type="text" name="partner_phone" value={formData.partner_phone} onChange={handleChange} />
+                              </div>
+                            </>
+                          )}
+
+                          {/* Account Specific Fields */}
+                          {isAccount && (
+                            <>
+                              <div className="col-span-2">
+                                <Label>Account/Business Name</Label>
+                                <Input type="text" name="account_name" value={formData.account_name} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2">
+                                <Label>Business Phone</Label>
+                                <Input type="text" name="account_phone" value={formData.account_phone} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2 lg:col-span-1">
+                                <Label>Account Representative</Label>
+                                <Input type="text" name="account_representative" value={formData.account_representative} onChange={handleChange} />
+                              </div>
+                            </>
+                          )}
+
+                          {/* Shop Specific Fields */}
+                          {isShop && (
+                            <>
+                              <div className="col-span-2">
+                                <Label>Shop Name</Label>
+                                <Input type="text" name="shop_name" value={formData.shop_name} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2 lg:col-span-1">
+                                <Label>Shop Representative</Label>
+                                <Input type="text" name="shop_representative" value={formData.shop_representative} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2 lg:col-span-1">
+                                <Label>Shop Phone</Label>
+                                <Input type="text" name="shop_phone" value={formData.shop_phone} onChange={handleChange} />
+                              </div>
+                              <div className="col-span-2">
+                                <Label>Additional Notes</Label>
+                                <textarea
+                                  name="shop_note"
+                                  value={formData.shop_note}
+                                  onChange={handleChange}
+                                  rows="3"
+                                  className="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 resize-none"
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Social Links Section in Form */}
+                    <div className="mt-8">
+                      <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                        Social Links
+                      </h5>
+                      <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                        <div>
+                          <Label>Facebook</Label>
+                          <Input type="text" name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/username" />
+                        </div>
+                        <div>
+                          <Label>X.com (Twitter)</Label>
+                          <Input type="text" name="twitter" value={formData.twitter} onChange={handleChange} placeholder="https://x.com/username" />
+                        </div>
+                        <div>
+                          <Label>Linkedin</Label>
+                          <Input type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/in/username" />
+                        </div>
+                        <div>
+                          <Label>Instagram</Label>
+                          <Input type="text" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/username" />
                         </div>
                       </div>
                     </div>
