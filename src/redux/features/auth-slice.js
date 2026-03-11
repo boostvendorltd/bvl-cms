@@ -37,10 +37,10 @@ export const login = createAsyncThunk(
 
 export const updateProfile = createAsyncThunk(
     "auth/updateProfile",
-    async (userData, { rejectWithValue }) => {
+    async (userData, { rejectWithValue, dispatch }) => {
         try {
-            const response = await api.post("/cms/profile/update", userData);
-            return response.data.user;
+            await api.post("/cms/profile/update", userData);
+            return await dispatch(fetchUserProfile()).unwrap();
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to update profile");
         }

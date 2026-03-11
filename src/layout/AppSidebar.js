@@ -71,8 +71,8 @@ const AppSidebar = () => {
       path: companiesPath
     },
     // Only show Products to Account(3) and Shop(5) if they have shops
-    ...(((user?.type === 3 && user?.account?.shops?.length > 0) ||
-      (user?.type === 5 && user?.shop)) ? [{
+    ...(((user?.type == 3 && user?.account?.shops?.length > 0) ||
+      (user?.type == 5 && user?.shop)) ? [{
         icon: <BoxCubeIcon />, // Using box icon for products
         name: t("PRODUCTS"),
         subItems: [{
