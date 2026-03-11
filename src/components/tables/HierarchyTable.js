@@ -20,7 +20,7 @@ export default function HierarchyTable({
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03] w-full max-w-full">
             <div className="max-w-full overflow-x-auto">
-                <div className="min-w-[1300px]">
+                <div className="min-w-[1600px]">
                     <Table>
                         <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                             <TableRow>
@@ -102,7 +102,7 @@ export default function HierarchyTable({
                                         // Default rendering
                                         return (
                                             <TableCell key={colIndex} className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                                                {col.render ? col.render(value, row) : value}
+                                                {col.render ? col.render(value, row) : (typeof value === 'object' && value !== null ? JSON.stringify(value) : value)}
                                             </TableCell>
                                         );
                                     })}

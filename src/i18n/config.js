@@ -17,7 +17,7 @@ i18n
       bn: { common: bnCommon.common },
     },
     fallbackLng: 'en',
-    lng: 'en', // Force default to EN
+    // lng: 'en', // Removed to allow language detector to work
     ns: ['common'],
     defaultNS: 'common',
     interpolation: {

@@ -1,89 +1,148 @@
 "use client";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import {
+    fetchShopCustomers,
+    createCustomer,
+    updateCustomer,
+    toggleCustomerStatus,
+    deleteCustomer,
+    bulkUpdateCustomerStatus,
+    bulkDeleteCustomers
+} from "@/redux/features/hierarchy-slice";
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
 import HierarchyTable from "@/components/tables/HierarchyTable";
-import QuickEditModal from "@/components/ui/modal/QuickEditModal";
 import TableActions from "@/components/tables/TableActions";
+import QuickEditModal from "@/components/ui/modal/QuickEditModal";
+import AddCustomerModal from "@/components/ui/modal/AddCustomerModal";
 import ConfirmationModal from "@/components/ui/modal/ConfirmationModal";
-import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import axios from "@/utils/api";
-import { MagnifyingGlassIcon, TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
+import {
+    MagnifyingGlassIcon,
+    TrashIcon,
+    PencilSquareIcon,
+    UserCircleIcon
+} from "@heroicons/react/24/outline";
 
 const ShopCustomersView = ({ shopId }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const { currentShopCustomers, pagination, isLoading } = useSelector((state) => state.hierarchy);
     const { user } = useSelector((state) => state.auth);
-    const [customers, setCustomers] = useState([]);
-    const [pagination, setPagination] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [selectedRow, setSelectedRow] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Filter & Search State
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
-
-    // Selection State
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-
-    // Delete Modal State
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const isRoot = user?.type === 0;
-    const isAdmin = user?.type === 4;
-    const isPartner = user?.type === 2;
+    const isPartner = user?.type === 2 || user?.role === 'partner';
+    const isRoot = user?.type === 0 || user?.role === 'root';
+    const isAdmin = user?.type === 4 || user?.role === 'administrator';
     const isAccount = user?.type === 3 || user?.role === 'account';
+    const isShop = user?.type === 5 || user?.role === 'shop';
 
-    // Permission flags: Customer management is usually for Shop/Account/Admin/Root.
-    // However, user requested Partner (and potentially Account) to be watch only here.
     const canEdit = isRoot || isAdmin;
-    const canManageStatus = isRoot || isAdmin;
-    const canBulkAction = isRoot || isAdmin;
-    const canDelete = isRoot || isAdmin;
-    const showActions = canEdit || canManageStatus || canDelete;
+    const canAdd = isRoot || isAdmin;
+    const canToggle = isRoot || isAdmin || isAccount || isShop;
 
-    // Confirmation Modal for single-row status toggle
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
         title: "",
         message: "",
         onConfirm: () => { },
-        isLoading: false
+        isLoading: false,
+        type: "danger",
+        confirmText: t("CONFIRM")
     });
-    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
-    const fetchCustomers = async (page = 1) => {
-        try {
-            setLoading(true);
-            const params = {
-                page,
-                limit: 10,
-                search: searchQuery,
-                status: statusFilter !== "all" ? statusFilter : undefined
-            };
-            const response = await axios.get(`/cms/shops/${shopId}/customers`, { params });
-            setCustomers(response.data.data);
-            setPagination({
-                current_page: response.data.current_page,
-                last_page: response.data.last_page,
-                total: response.data.total
-            });
-        } catch (error) {
-            console.error("Error fetching customers:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const closeConfirmModal = () => setConfirmModal(prev => ({ ...prev, isOpen: false }));
 
     useEffect(() => {
         if (shopId) {
-            fetchCustomers(1);
+            dispatch(fetchShopCustomers({ shopId, page: 1, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
         }
-    }, [shopId, searchQuery, statusFilter]);
+    }, [dispatch, shopId, searchQuery, statusFilter]);
 
-    // Selection Handlers
+    const handlePageChange = (page) => {
+        dispatch(fetchShopCustomers({ shopId, page, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
+    };
+
+    const handleEditClick = (row) => {
+        setSelectedRow(row);
+        setIsEditModalOpen(true);
+    };
+
+    const handleToggleStatus = (row) => {
+        const newStatus = row.status === 1 ? 0 : 1;
+        const action = newStatus === 1 ? t("ACTIVATE") : t("DEACTIVATE");
+
+        setConfirmModal({
+            isOpen: true,
+            title: `${action} ${t("CUSTOMERS").slice(0, -1)}`,
+            message: t("CONFIRM_ACTION_MSG", { action: action.toLowerCase(), name: row.name || t("THIS_CUSTOMER") }),
+            type: "warning",
+            confirmText: action,
+            onConfirm: async () => {
+                setConfirmModal(prev => ({ ...prev, isLoading: true }));
+                try {
+                    await toast.promise(
+                        dispatch(toggleCustomerStatus({ shopId, id: row.id, status: newStatus })).unwrap(),
+                        {
+                            loading: t("UPDATING_STATUS"),
+                            success: t("STATUS_UPDATED"),
+                            error: (err) => `${t("ERROR")}: ${err}`
+                        }
+                    );
+                    dispatch(fetchShopCustomers({ shopId, page: pagination.current_page }));
+                    closeConfirmModal();
+                } catch (error) {
+                } finally {
+                    setConfirmModal(prev => ({ ...prev, isLoading: false }));
+                }
+            }
+        });
+    };
+
+    const handleSaveCustomer = async (id, formData) => {
+        try {
+            await toast.promise(
+                dispatch(updateCustomer({ shopId, id, data: formData })).unwrap(),
+                {
+                    loading: t("SAVING"),
+                    success: t("SAVED_SUCCESS"),
+                    error: (err) => `${t("ERROR")}: ${err}`
+                }
+            );
+            dispatch(fetchShopCustomers({ shopId, page: pagination.current_page }));
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const handleCreateCustomer = async (formData) => {
+        try {
+            await toast.promise(
+                dispatch(createCustomer({ shopId, data: formData })).unwrap(),
+                {
+                    loading: t("CREATING"),
+                    success: t("CREATED_SUCCESS"),
+                    error: (err) => `${t("ERROR")}: ${err}`
+                }
+            );
+            dispatch(fetchShopCustomers({ shopId, page: 1 }));
+            setIsAddModalOpen(false);
+        } catch (error) {
+            throw error;
+        }
+    };
+
     const handleSelectAll = (checked) => {
         if (checked) {
-            setSelectedIds(customers.map(c => c.id));
+            setSelectedIds(currentShopCustomers.map(c => c.id));
         } else {
             setSelectedIds([]);
         }
@@ -97,8 +156,7 @@ const ShopCustomersView = ({ shopId }) => {
         }
     };
 
-    // Bulk Delete
-    const handleBulkDelete = async () => {
+    const handleBulkDelete = () => {
         if (selectedIds.length === 0) return;
         setIsDeleteModalOpen(true);
     };
@@ -106,210 +164,155 @@ const ShopCustomersView = ({ shopId }) => {
     const confirmDelete = async () => {
         try {
             await toast.promise(
-                axios.post(`/cms/shops/${shopId}/customers/bulk-delete`, { ids: selectedIds }),
+                dispatch(bulkDeleteCustomers({ shopId, ids: selectedIds })).unwrap(),
                 {
-                    loading: 'Deleting customers...',
-                    success: 'Customers deleted successfully',
-                    error: 'Failed to delete customers'
+                    loading: t("DELETING"),
+                    success: t("DELETED_SUCCESS"),
+                    error: (err) => `${t("ERROR")}: ${err}`
                 }
             );
             setSelectedIds([]);
-            fetchCustomers(pagination?.current_page || 1);
+            dispatch(fetchShopCustomers({ shopId, page: pagination.current_page, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
             setIsDeleteModalOpen(false);
         } catch (error) {
-            console.error(error);
         }
     };
 
-    // Bulk Status Update
     const handleBulkStatusUpdate = async (status) => {
         if (selectedIds.length === 0) return;
         try {
             await toast.promise(
-                axios.post(`/cms/shops/${shopId}/customers/bulk-status`, {
-                    ids: selectedIds,
-                    status: parseInt(status)
-                }),
+                dispatch(bulkUpdateCustomerStatus({ shopId, ids: selectedIds, status })).unwrap(),
                 {
-                    loading: 'Updating status...',
-                    success: 'Status updated successfully',
-                    error: 'Failed to update status'
+                    loading: t("UPDATING_STATUS"),
+                    success: t("STATUS_UPDATED"),
+                    error: (err) => `${t("ERROR")}: ${err}`
                 }
             );
             setSelectedIds([]);
-            fetchCustomers(pagination?.current_page || 1);
+            dispatch(fetchShopCustomers({ shopId, page: pagination.current_page, search: searchQuery, status: statusFilter !== "all" ? statusFilter : undefined }));
         } catch (error) {
-            console.error(error);
         }
     };
 
-    const handleToggleStatus = (row) => {
-        const newStatus = row.status === 1 ? 0 : 1;
-        const action = newStatus === 1 ? "Activate" : "Deactivate";
-
-        setConfirmModal({
-            isOpen: true,
-            title: `${action} Customer`,
-            message: `Are you sure you want to ${action.toLowerCase()} ${row.name || 'this customer'}?`,
-            isLoading: false,
-            onConfirm: async () => {
-                setConfirmModal(prev => ({ ...prev, isLoading: true }));
-                try {
-                    await toast.promise(
-                        axios.put(`/cms/shops/${shopId}/customers/${row.id}`, {
-                            ...row,
-                            status: newStatus
-                        }),
-                        {
-                            loading: `${action === 'Activate' ? 'Activating' : 'Deactivating'} customer...`,
-                            success: `Customer ${action === 'Activate' ? 'activated' : 'deactivated'} successfully`,
-                            error: 'Failed to update status'
-                        }
-                    );
-                    fetchCustomers(pagination?.current_page || 1);
-                    closeConfirmModal();
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    setConfirmModal(prev => ({ ...prev, isLoading: false }));
-                }
-            }
-        });
-    };
-
-
-
-
-
     const columns = [
-        ...(canManageStatus ? [{ header: "ID", accessor: "id" }] : []),
+        { header: t("ID"), accessor: "id" },
         {
-            header: "Customer Name",
+            header: t("CUSTOMER_NAME"),
             accessor: "name",
-        },
-        { header: "Email", accessor: "email" },
-        { header: "Phone", accessor: "phone" },
-        {
-            header: "Date of Birth",
-            accessor: "dob",
-            render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
-        },
-        {
-            header: "Gender",
-            accessor: "gender",
-            render: (value) => {
-                if (value === null || value === undefined) return 'N/A';
-                const genderMap = { 0: 'Male', 1: 'Female', 2: 'Other' };
-                return genderMap[value] || 'N/A';
-            }
-        },
-        {
-            header: "Avatar",
-            accessor: "avatar",
-            render: (value) => value ? (
-                <img src={value} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
-            ) : (
-                <img src="/images/user/default.jpg" alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+            render: (name, row) => (
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border">
+                        {row.avatar ? (
+                            <img src={row.avatar} alt={name} className="w-full h-full object-cover" />
+                        ) : (
+                            <UserCircleIcon className="w-6 h-6 text-gray-400" />
+                        )}
+                    </div>
+                    <span className="font-medium text-gray-700 dark:text-gray-200 text-sm">{name || t("UNNAMED")}</span>
+                </div>
             )
         },
         {
-            header: "Last Login",
-            accessor: "last_login_at",
-            render: (value) => value ? new Date(value).toLocaleString() : 'Never'
+            header: t("EMAIL"),
+            accessor: "email",
+            render: (val) => <span className="text-gray-600 dark:text-gray-400 text-sm">{val || '-'}</span>
         },
         {
-            header: "Status",
+            header: t("PHONE"),
+            accessor: "phone",
+            render: (val) => <span className="text-gray-600 dark:text-gray-400 text-sm">{val || '-'}</span>
+        },
+        {
+            header: t("DATE_OF_BIRTH"),
+            accessor: "dob",
+            render: (dob) => <span className="text-gray-600 dark:text-gray-400 text-sm">{dob ? new Date(dob).toLocaleDateString() : '-'}</span>
+        },
+        {
+            header: t("GENDER"),
+            accessor: "gender",
+            render: (gender) => (
+                <span className="capitalize text-gray-600 dark:text-gray-400 text-sm">
+                    {t(String(gender || "").toUpperCase()) || '-'}
+                </span>
+            )
+        },
+        {
+            header: t("LAST_LOGIN"),
+            accessor: "last_login_at",
+            render: (date) => <span className="text-gray-600 dark:text-gray-400 text-sm">{date ? new Date(date).toLocaleString() : t("NEVER")}</span>
+        },
+        {
+            header: t("STATUS"),
             accessor: "status",
-            render: (value) => {
-                const statusMap = {
-                    0: { label: 'Inactive', color: 'bg-red-100 text-red-800' },
-                    1: { label: 'Active', color: 'bg-green-100 text-green-800' },
-                    2: { label: 'Pending', color: 'bg-orange-100 text-orange-800' },
-                    3: { label: 'Archived', color: 'bg-gray-100 text-gray-800' },
-                };
-                const config = statusMap[value] || { label: 'Unknown', color: 'bg-gray-100 text-gray-800' };
+            render: (status) => {
+                const s = Number(status);
+                let label = t('UNKNOWN');
+                let color = 'bg-gray-100 text-gray-800';
+
+                if (s === 1) { label = t('ACTIVE'); color = 'bg-green-100 text-green-800'; }
+                else if (s === 0) { label = t('INACTIVE'); color = 'bg-red-100 text-red-800'; }
+                else if (s === 2) { label = t('PENDING'); color = 'bg-orange-100 text-orange-800'; }
+                else if (s === 3) { label = t('ARCHIVED'); color = 'bg-gray-200 text-gray-600'; }
 
                 return (
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-                        {config.label}
+                    <span className={`px-2 py-1 rounded-full text-sm font-medium ${color}`}>
+                        {label}
                     </span>
                 );
             }
         },
         {
-            header: "Joined At",
+            header: t("JOINED_AT"),
             accessor: "created_at",
-            render: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
+            render: (date) => <span className="text-gray-600 dark:text-gray-400 text-sm">{date ? new Date(date).toLocaleDateString() : '-'}</span>
         },
-        ...(showActions ? [{
-            header: "Actions",
+        {
+            header: t("ACTIONS"),
             accessor: "actions",
             render: (_, row) => (
                 <div className="flex items-center space-x-2">
                     {canEdit && (
                         <button
-                            onClick={() => handleIdClick(row)}
+                            onClick={() => handleEditClick(row)}
                             className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                            title="Edit"
+                            title={t("EDIT")}
                         >
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
                     )}
-
-                    {canManageStatus && (
+                    {canToggle && (
                         <button
                             onClick={() => handleToggleStatus(row)}
-                            className={`px-3 py-1 text-xs rounded border ${row.status === 1
+                            className={`px-3 py-1 text-sm rounded border ${row.status === 1
                                 ? 'border-red-500 text-red-600 hover:bg-red-50'
                                 : 'border-green-500 text-green-600 hover:bg-green-50'
                                 }`}
                         >
-                            {row.status === 1 ? 'Deactivate' : 'Activate'}
+                            {row.status === 1 ? t("DEACTIVATE") : t("ACTIVATE")}
                         </button>
                     )}
-                    {canDelete && (
+                    {isRoot && (
                         <button
                             onClick={() => {
                                 setSelectedIds([row.id]);
                                 setIsDeleteModalOpen(true);
                             }}
                             className="p-1 text-red-500 hover:bg-red-50 rounded"
-                            title="Delete"
+                            title={t("DELETE")}
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>
                     )}
                 </div>
             )
-        }] : [])
-    ];
-
-    const handleIdClick = (row) => {
-        setSelectedRow(row);
-        setIsModalOpen(true);
-    };
-
-    const handleDownloadCsv = () => {
-        window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/customers/${shopId}`, '_blank');
-    };
-
-    const handleSave = async (id, formData) => {
-        try {
-            await axios.put(`/cms/shops/${shopId}/customers/${id}`, formData);
-            toast.success("Customer updated successfully");
-            setIsModalOpen(false);
-            fetchCustomers(pagination?.current_page || 1);
-        } catch (error) {
-            console.error("Update failed", error);
-            toast.error(error.response?.data?.message || "Failed to update customer");
         }
-    };
+    ];
 
     return (
         <>
-            <PageBreadCrumb pageTitle="Customers" />
-            <div className="space-y-5">
-                {/* Toolbar */}
+            <PageBreadCrumb pageTitle={t("CUSTOMERS")} />
+            <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
                         <div className="relative">
@@ -318,7 +321,7 @@ const ShopCustomersView = ({ shopId }) => {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search customers..."
+                                placeholder={t("SEARCH_CUSTOMERS")}
                                 className="py-2 pl-9 pr-4 text-sm border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:text-white/90"
                             />
                         </div>
@@ -327,103 +330,110 @@ const ShopCustomersView = ({ shopId }) => {
                             onChange={(e) => setStatusFilter(e.target.value)}
                             className="py-2 px-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:text-gray-400"
                         >
-                            <option value="all">All Status</option>
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                            <option value="2">Pending</option>
-                            <option value="3">Archived</option>
+                            <option value="all">{t("ALL_STATUS")}</option>
+                            <option value="1">{t("ACTIVE")}</option>
+                            <option value="0">{t("INACTIVE")}</option>
+                            <option value="2">{t("PENDING")}</option>
+                            <option value="3">{t("ARCHIVED")}</option>
                         </select>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {canBulkAction && selectedIds.length > 0 && (
+                        {selectedIds.length > 0 && canToggle && (
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500">{selectedIds.length} selected</span>
-                                {/* Bulk Status: Root (0) & Admin (4) */}
+                                <span className="text-sm text-gray-500">{selectedIds.length} {t("SELECTED")}</span>
                                 <button
                                     onClick={() => handleBulkStatusUpdate(1)}
                                     className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-md hover:bg-emerald-100"
                                 >
-                                    Activate
+                                    {t("ACTIVATE")}
                                 </button>
                                 <button
                                     onClick={() => handleBulkStatusUpdate(0)}
                                     className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                                 >
-                                    Deactivate
+                                    {t("DEACTIVATE")}
                                 </button>
-                                {/* Bulk Delete: Root (0) Only */}
-                                {canDelete && (
+                                {user?.type === 0 && (
                                     <button
                                         onClick={handleBulkDelete}
                                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100"
                                     >
                                         <TrashIcon className="w-4 h-4" />
-                                        Delete
+                                        {t("DELETE")}
                                     </button>
                                 )}
                             </div>
                         )}
                         <TableActions
-                            onDownload={handleDownloadCsv}
+                            onAdd={canAdd ? () => setIsAddModalOpen(true) : null}
+                            onDownload={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/cms/download-csv/customers/${shopId}`, '_blank')}
+                            addButtonText={t("ADD_CUSTOMER")}
                         />
                     </div>
                 </div>
+
                 <HierarchyTable
                     columns={columns}
-                    data={customers}
+                    data={currentShopCustomers}
                     pagination={pagination}
-                    onPageChange={fetchCustomers}
-                    onIdClick={canEdit ? handleIdClick : undefined}
-                    selectable={canEdit}
+                    isLoading={isLoading}
+                    onPageChange={handlePageChange}
+                    onIdClick={canEdit ? handleEditClick : null}
+                    selectable={!isPartner}
                     selectedIds={selectedIds}
                     onSelect={handleSelectRow}
                     onSelectAll={handleSelectAll}
                 />
+
+                <QuickEditModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    data={selectedRow}
+                    onSave={handleSaveCustomer}
+                    title={t("EDIT_CUSTOMER")}
+                    fields={{
+                        name: { label: t("NAME"), type: "text" },
+                        email: { label: t("EMAIL"), type: "email" },
+                        phone: { label: t("PHONE"), type: "text" },
+                        dob: { label: t("DATE_OF_BIRTH"), type: "date" },
+                        gender: {
+                            label: t("GENDER"),
+                            type: "select",
+                            options: { male: t("MALE"), female: t("FEMALE"), other: t("OTHER") }
+                        },
+                        address_1: { label: t("ADDRESS_1"), type: "text" },
+                        address_2: { label: t("ADDRESS_2"), type: "text" }
+                    }}
+                />
+
+                <AddCustomerModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onSave={handleCreateCustomer}
+                />
+
+                <ConfirmationModal
+                    isOpen={confirmModal.isOpen}
+                    onClose={closeConfirmModal}
+                    onConfirm={confirmModal.onConfirm}
+                    title={confirmModal.title}
+                    message={confirmModal.message}
+                    type={confirmModal.type}
+                    confirmText={confirmModal.confirmText}
+                    isLoading={confirmModal.isLoading}
+                />
+
+                <ConfirmationModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={confirmDelete}
+                    title={t("DELETE_CUSTOMERS")}
+                    message={t("CONFIRM_DELETE_MSG", { count: selectedIds.length })}
+                    confirmText={t("DELETE")}
+                    confirmColor="bg-red-600 hover:bg-red-700"
+                />
             </div>
-
-            <ConfirmationModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={confirmDelete}
-                title="Delete Customers"
-                message={`Are you sure you want to delete ${selectedIds.length} customer(s)? This action cannot be undone.`}
-                confirmText="Delete"
-                confirmColor="bg-red-600 hover:bg-red-700"
-            />
-
-            {/* Single-row status toggle confirmation */}
-            <ConfirmationModal
-                isOpen={confirmModal.isOpen}
-                onClose={closeConfirmModal}
-                onConfirm={confirmModal.onConfirm}
-                title={confirmModal.title}
-                message={confirmModal.message}
-                confirmText="Confirm"
-                isLoading={confirmModal.isLoading}
-            />
-
-            <QuickEditModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                data={selectedRow}
-                onSave={handleSave}
-                title="Edit Customer"
-                fields={{
-                    name: { label: "Customer Name" },
-                    email: { label: "Email" },
-                    phone: { label: "Phone" },
-                    status: {
-                        label: "Status",
-                        type: 'select',
-                        options: {
-                            0: { label: 'Inactive' }, 1: { label: 'Active' }, 2: { label: 'Pending' }, 3: { label: 'Archived' }
-                        }
-                    },
-                    last_login_at: { label: "Last Login", type: 'datetime' },
-                    created_at: { label: "Joined At", type: 'datetime' }
-                }}
-            />
         </>
     );
 };

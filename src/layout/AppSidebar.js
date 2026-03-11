@@ -65,6 +65,11 @@ const AppSidebar = () => {
         pro: false
       }]
     },
+    {
+      icon: <GroupIcon />,
+      name: t(companiesLabel.toUpperCase()),
+      path: companiesPath
+    },
     // Only show Products to Account(3) and Shop(5) if they have shops
     ...(((user?.type === 3 && user?.account?.shops?.length > 0) ||
       (user?.type === 5 && user?.shop)) ? [{
@@ -85,10 +90,6 @@ const AppSidebar = () => {
         }]
       }] : []),
     {
-      icon: <GroupIcon />,
-      name: t(companiesLabel.toUpperCase()),
-      path: companiesPath
-    }, {
       icon: <UserCircleIcon />,
       name: t("PROFILE"),
       path: "/profile"

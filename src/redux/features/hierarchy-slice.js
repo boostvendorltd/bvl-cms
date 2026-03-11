@@ -6,6 +6,7 @@ const initialState = {
     partnersList: [],
     currentPartnerAccounts: [],
     currentAccountShops: [],
+    currentShopCustomers: [],
     shopTypes: [],
     isLoading: false,
     error: null,
@@ -93,8 +94,9 @@ export const updatePartner = createAsyncThunk(
 
 export const togglePartnerStatus = createAsyncThunk(
     "hierarchy/togglePartnerStatus",
-    async (id, { rejectWithValue }) => {
+    async (arg, { rejectWithValue }) => {
         try {
+            const id = typeof arg === 'object' ? arg.id : arg;
             const response = await api.put(`/cms/partners/${id}/status`);
             return { id, status: response.data.status };
         } catch (error) {
@@ -183,7 +185,7 @@ export const approveAccount = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const response = await api.put(`/cms/accounts/${id}/approve`);
-            return response.data; // Only returns message
+            return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to approve account");
         }
@@ -192,8 +194,9 @@ export const approveAccount = createAsyncThunk(
 
 export const toggleAccountStatus = createAsyncThunk(
     "hierarchy/toggleAccountStatus",
-    async (id, { rejectWithValue }) => {
+    async (arg, { rejectWithValue }) => {
         try {
+            const id = typeof arg === 'object' ? arg.id : arg;
             const response = await api.put(`/cms/accounts/${id}/status`);
             return { id, status: response.data.status };
         } catch (error) {
@@ -279,8 +282,9 @@ export const approveShop = createAsyncThunk(
 
 export const toggleShopStatus = createAsyncThunk(
     "hierarchy/toggleShopStatus",
-    async (id, { rejectWithValue }) => {
+    async (arg, { rejectWithValue }) => {
         try {
+            const id = typeof arg === 'object' ? arg.id : arg;
             const response = await api.put(`/cms/shops/${id}/status`);
             return { id, status: response.data.status };
         } catch (error) {
@@ -288,6 +292,87 @@ export const toggleShopStatus = createAsyncThunk(
         }
     }
 );
+
+// --- Customers ---
+
+export const fetchShopCustomers = createAsyncThunk(
+    "hierarchy/fetchShopCustomers",
+    async ({ shopId, page = 1, limit = 10, search = '', status = '' }, { rejectWithValue }) => {
+        try {
+            const query = new URLSearchParams({ page, limit, search, status }).toString();
+            const response = await api.get(`/cms/shops/${shopId}/customers?${query}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch customers");
+        }
+    }
+);
+
+export const bulkDeleteCustomers = createAsyncThunk(
+    "hierarchy/bulkDeleteCustomers",
+    async ({ shopId, ids }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/shops/${shopId}/customers/bulk-delete`, { ids });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to delete customers");
+        }
+    }
+);
+
+export const bulkUpdateCustomerStatus = createAsyncThunk(
+    "hierarchy/bulkUpdateCustomerStatus",
+    async ({ shopId, ids, status }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/shops/${shopId}/customers/bulk-status`, { ids, status });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update customers status");
+        }
+    }
+);
+
+export const createCustomer = createAsyncThunk(
+    "hierarchy/createCustomer",
+    async ({ shopId, data }, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/cms/shops/${shopId}/customers`, data);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to create customer");
+        }
+    }
+);
+
+export const updateCustomer = createAsyncThunk(
+    "hierarchy/updateCustomer",
+    async ({ shopId, id, data }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/cms/shops/${shopId}/customers/${id}`, data);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update customer");
+        }
+    }
+);
+
+export const toggleCustomerStatus = createAsyncThunk(
+    "hierarchy/toggleCustomerStatus",
+    async ({ shopId, id, status }, { rejectWithValue }) => {
+        try {
+            const response = await api.put(`/cms/shops/${shopId}/customers/${id}/status`, { status });
+            return { id, status: response.data.status };
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to toggle status");
+        }
+    }
+);
+
+// Aliases for backward compatibility or singular actions using bulk
+export const deletePartner = bulkDeletePartners;
+export const deleteAccount = bulkDeleteAccounts;
+export const deleteShop = bulkDeleteShops;
+export const deleteCustomer = bulkDeleteCustomers;
 
 export const fetchShopTypes = createAsyncThunk(
     "hierarchy/fetchShopTypes",
@@ -339,6 +424,19 @@ const hierarchySlice = createSlice({
                     state.partners[index] = action.payload.data;
                 }
             })
+            .addCase(togglePartnerStatus.fulfilled, (state, action) => {
+                const partner = state.partners.find(p => p.id === action.payload.id);
+                if (partner && partner.user) {
+                    partner.user.status = action.payload.status;
+                }
+            })
+            .addCase(approvePartner.fulfilled, (state, action) => {
+                const partner = state.partners.find(p => p.id === action.payload.id);
+                if (partner && partner.user) {
+                    partner.user.is_approved = 1;
+                    partner.user.status = 1; // Usually approved means active
+                }
+            })
             // Accounts
             .addCase(fetchPartnerAccounts.pending, (state) => { state.isLoading = true; })
             .addCase(fetchPartnerAccounts.fulfilled, (state, action) => {
@@ -359,9 +457,18 @@ const hierarchySlice = createSlice({
                     state.currentPartnerAccounts[index] = action.payload.data;
                 }
             })
+            .addCase(toggleAccountStatus.fulfilled, (state, action) => {
+                const account = state.currentPartnerAccounts.find(a => a.id === action.payload.id);
+                if (account && account.user) {
+                    account.user.status = action.payload.status;
+                }
+            })
             .addCase(approveAccount.fulfilled, (state, action) => {
-                // We'd ideally need the ID in the payload to update state locally without refetch
-                // But for now, we usually dispatch fetchPartnerAccounts again or handle it in UI
+                const account = state.currentPartnerAccounts.find(a => a.id === action.payload.id);
+                if (account && account.user) {
+                    account.user.is_approved = 1;
+                    account.user.status = 1;
+                }
             })
             // Shops
             .addCase(fetchAccountShops.pending, (state) => { state.isLoading = true; })
@@ -381,6 +488,45 @@ const hierarchySlice = createSlice({
                 const index = state.currentAccountShops.findIndex(s => s.id === action.payload.data.id);
                 if (index !== -1) {
                     state.currentAccountShops[index] = action.payload.data;
+                }
+            })
+            .addCase(toggleShopStatus.fulfilled, (state, action) => {
+                const shop = state.currentAccountShops.find(s => s.id === action.payload.id);
+                if (shop) {
+                    shop.status = action.payload.status;
+                }
+            })
+            .addCase(approveShop.fulfilled, (state, action) => {
+                const shop = state.currentAccountShops.find(s => s.id === action.payload.id);
+                if (shop) {
+                    shop.is_approved = 1;
+                    shop.status = 1;
+                }
+            })
+            // Customers
+            .addCase(fetchShopCustomers.pending, (state) => { state.isLoading = true; })
+            .addCase(fetchShopCustomers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.currentShopCustomers = action.payload.data;
+                state.pagination = {
+                    total: action.payload.total,
+                    current_page: action.payload.current_page,
+                    last_page: action.payload.last_page
+                };
+            })
+            .addCase(createCustomer.fulfilled, (state, action) => {
+                state.currentShopCustomers.unshift(action.payload.data);
+            })
+            .addCase(updateCustomer.fulfilled, (state, action) => {
+                const index = state.currentShopCustomers.findIndex(c => c.id === action.payload.data.id);
+                if (index !== -1) {
+                    state.currentShopCustomers[index] = action.payload.data;
+                }
+            })
+            .addCase(toggleCustomerStatus.fulfilled, (state, action) => {
+                const customer = state.currentShopCustomers.find(c => c.id === action.payload.id);
+                if (customer) {
+                    customer.status = action.payload.status;
                 }
             })
             // Shop Types
