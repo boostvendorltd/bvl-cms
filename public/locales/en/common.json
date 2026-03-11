@@ -152,6 +152,21 @@
     "GROCERY": "Grocery",
     "ELECTRONICS": "Electronics",
     "CLOTHING": "Clothing",
-    "RESTAURANT": "Restaurant"
+    "RESTAURANT": "Restaurant",
+    "ADD_NEW_PARTNER": "Add New Partner",
+    "NONE_TOP_LEVEL": "None (Top Level)",
+    "MIN_8_CHARACTERS": "Min 8 characters",
+    "CREATE_PARTNER": "Create Partner",
+    "PARTNER_CREATED_SUCCESS": "Partner created successfully",
+    "STREET_BLOCK_PLACEHOLDER": "Street, Block...",
+    "CITY_STATE_COUNTRY_PLACEHOLDER": "City, State, Country...",
+    "ADDITIONAL_NOTES_PLACEHOLDER": "Additional notes...",
+    "ADD_NEW_ACCOUNT": "Add New Account",
+    "ACCOUNT_CREATED_SUCCESS": "Account created successfully",
+    "CREATE_ACCOUNT": "Create Account",
+    "ACCOUNT_NAME": "Account Name",
+    "FULL_NAME": "Full Name",
+    "STREET_ADDRESS_PLACEHOLDER": "Street address...",
+    "APARTMENT_SUITE_PLACEHOLDER": "Apartment, suite, etc."
   }
 }

@@ -4,8 +4,10 @@ import React, { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         parent_partner_id: "",
         partner_name: "",
@@ -31,9 +33,9 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
         if (typeof err === "string") return err;
         if (err?.errors) {
             const errors = Object.values(err.errors).flat();
-            return errors.length > 0 ? errors.join(", ") : (err.message || "An error occurred");
+            return errors.length > 0 ? errors.join(", ") : (err.message || t("AN_ERROR_OCCURRED"));
         }
-        return err?.message || "An error occurred";
+        return err?.message || t("AN_ERROR_OCCURRED");
     };
 
     const handleSubmit = async (e) => {
@@ -42,7 +44,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
         setError("");
         try {
             await onSave(formData);
-            toast.success("Partner created successfully");
+            toast.success(t("PARTNER_CREATED_SUCCESS"));
             onClose();
             setFormData({
                 parent_partner_id: "",
@@ -95,7 +97,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
                                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                     <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900 dark:text-white">
-                                        Add New Partner
+                                        {t("ADD_NEW_PARTNER")}
                                     </Dialog.Title>
                                     <button
                                         onClick={onClose}
@@ -114,7 +116,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("NAME")} *</label>
                                             <input
                                                 type="text"
                                                 name="name"
@@ -122,18 +124,18 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                                                 onChange={handleChange}
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Name"
+                                                placeholder={t("NAME")}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parent Partner</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("PARENT_PARTNER")}</label>
                                             <select
                                                 name="parent_partner_id"
                                                 value={formData.parent_partner_id}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             >
-                                                <option value="">None (Top Level)</option>
+                                                <option value="">{t("NONE_TOP_LEVEL")}</option>
                                                 {partners.map((p) => (
                                                     <option key={p.id} value={p.id}>{p.name}</option>
                                                 ))}
@@ -143,7 +145,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("EMAIL")} *</label>
                                             <input
                                                 type="email"
                                                 name="email"
@@ -155,7 +157,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("PASSWORD")} *</label>
                                             <input
                                                 type="password"
                                                 name="password"
@@ -163,14 +165,14 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                                                 onChange={handleChange}
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Min 8 characters"
+                                                placeholder={t("MIN_8_CHARACTERS")}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("PHONE")}</label>
                                             <input
                                                 type="text"
                                                 name="phone"
@@ -184,7 +186,7 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commission Rate (%)</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("COMMISSION_RATE")}</label>
                                             <input
                                                 type="number"
                                                 name="commission_rate"
@@ -195,53 +197,53 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commission Type</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("COMMISSION_TYPE")}</label>
                                             <select
                                                 name="commission_type"
                                                 value={formData.commission_type}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
                                             >
-                                                <option value="percentage">Percentage</option>
-                                                <option value="fixed">Fixed</option>
+                                                <option value="percentage">{t("PERCENTAGE")}</option>
+                                                <option value="fixed">{t("FIXED")}</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address Line 1</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("ADDRESS_1")}</label>
                                             <input
                                                 type="text"
                                                 name="address_1"
                                                 value={formData.address_1}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Street, Block..."
+                                                placeholder={t("STREET_BLOCK_PLACEHOLDER")}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address Line 2</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("ADDRESS_2")}</label>
                                             <input
                                                 type="text"
                                                 name="address_2"
                                                 value={formData.address_2}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="City, State, Country..."
+                                                placeholder={t("CITY_STATE_COUNTRY_PLACEHOLDER")}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="col-span-full">
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("NOTE")}</label>
                                         <textarea
                                             name="note"
                                             value={formData.note}
                                             onChange={handleChange}
                                             rows="4"
                                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none bg-white dark:bg-gray-700 dark:text-white"
-                                            placeholder="Additional notes..."
+                                            placeholder={t("ADDITIONAL_NOTES_PLACEHOLDER")}
                                         />
                                     </div>
 
@@ -252,14 +254,14 @@ const AddPartnerModal = ({ isOpen, onClose, onSave, partners = [] }) => {
                                             disabled={loading}
                                             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                                         >
-                                            Cancel
+                                            {t("CANCEL")}
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={loading}
                                             className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
                                         >
-                                            {loading ? "Creating..." : "Create Partner"}
+                                            {loading ? t("CREATING") : t("CREATE_PARTNER")}
                                         </button>
                                     </div>
                                 </form>

@@ -4,8 +4,10 @@ import React, { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const AddAccountModal = ({ isOpen, onClose, onSave }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -27,9 +29,9 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
         if (typeof err === "string") return err;
         if (err?.errors) {
             const errors = Object.values(err.errors).flat();
-            return errors.length > 0 ? errors.join(", ") : (err.message || "An error occurred");
+            return errors.length > 0 ? errors.join(", ") : (err.message || t("AN_ERROR_OCCURRED"));
         }
-        return err?.message || "An error occurred";
+        return err?.message || t("AN_ERROR_OCCURRED");
     };
 
     const handleSubmit = async (e) => {
@@ -38,7 +40,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
         setError("");
         try {
             await onSave(formData);
-            toast.success("Account created successfully");
+            toast.success(t("ACCOUNT_CREATED_SUCCESS"));
             onClose();
         } catch (err) {
             const errMessage = formatError(err);
@@ -78,7 +80,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
                                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                     <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900 dark:text-white">
-                                        Add New Account
+                                        {t("ADD_NEW_ACCOUNT")}
                                     </Dialog.Title>
                                     <button
                                         onClick={onClose}
@@ -97,7 +99,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("NAME")} *</label>
                                             <input
                                                 type="text"
                                                 name="name"
@@ -105,11 +107,11 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                                                 onChange={handleChange}
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Account Name"
+                                                placeholder={t("ACCOUNT_NAME")}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("EMAIL")} *</label>
                                             <input
                                                 type="email"
                                                 name="email"
@@ -124,7 +126,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("PHONE")}</label>
                                             <input
                                                 type="text"
                                                 name="phone"
@@ -135,7 +137,7 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("PASSWORD")} *</label>
                                             <input
                                                 type="password"
                                                 name="password"
@@ -143,44 +145,44 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                                                 onChange={handleChange}
                                                 required
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Min 8 characters"
+                                                placeholder={t("MIN_8_CHARACTERS")}
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Representative</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("ACCOUNT_REPRESENTATIVE")}</label>
                                         <input
                                             type="text"
                                             name="account_representative"
                                             value={formData.account_representative}
                                             onChange={handleChange}
                                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                            placeholder="Full Name"
+                                            placeholder={t("FULL_NAME")}
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address Line 1</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("ADDRESS_1")}</label>
                                             <input
                                                 type="text"
                                                 name="address_1"
                                                 value={formData.address_1}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Street address..."
+                                                placeholder={t("STREET_ADDRESS_PLACEHOLDER")}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address Line 2</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t("ADDRESS_2")}</label>
                                             <input
                                                 type="text"
                                                 name="address_2"
                                                 value={formData.address_2}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white dark:bg-gray-700 dark:text-white"
-                                                placeholder="Apartment, suite, etc."
+                                                placeholder={t("APARTMENT_SUITE_PLACEHOLDER")}
                                             />
                                         </div>
                                     </div>
@@ -192,14 +194,14 @@ const AddAccountModal = ({ isOpen, onClose, onSave }) => {
                                             disabled={loading}
                                             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
                                         >
-                                            Cancel
+                                            {t("CANCEL")}
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={loading}
                                             className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
                                         >
-                                            {loading ? "Creating..." : "Create Account"}
+                                            {loading ? t("CREATING") : t("CREATE_ACCOUNT")}
                                         </button>
                                     </div>
                                 </form>

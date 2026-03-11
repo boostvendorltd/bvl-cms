@@ -152,6 +152,21 @@
     "GROCERY": "মুদি দোকান",
     "ELECTRONICS": "ইলেক্ট্রনিক্স",
     "CLOTHING": "পোশাক",
-    "RESTAURANT": "রেস্টুরেন্ট"
+    "RESTAURANT": "রেস্টুরেন্ট",
+    "ADD_NEW_PARTNER": "নতুন পার্টনার যোগ করুন",
+    "NONE_TOP_LEVEL": "কেউ না (শীর্ষ স্তর)",
+    "MIN_8_CHARACTERS": "নূন্যতম ৮ অক্ষর",
+    "CREATE_PARTNER": "পার্টনার তৈরি করুন",
+    "PARTNER_CREATED_SUCCESS": "পার্টনার সফলভাবে তৈরি করা হয়েছে",
+    "STREET_BLOCK_PLACEHOLDER": "রাস্তা, ব্লক...",
+    "CITY_STATE_COUNTRY_PLACEHOLDER": "শহর, রাজ্য, দেশ...",
+    "ADDITIONAL_NOTES_PLACEHOLDER": "অতিরিক্ত নোট...",
+    "ADD_NEW_ACCOUNT": "নতুন অ্যাকাউন্ট যোগ করুন",
+    "ACCOUNT_CREATED_SUCCESS": "অ্যাকাউন্ট সফলভাবে তৈরি করা হয়েছে",
+    "CREATE_ACCOUNT": "অ্যাকাউন্ট তৈরি করুন",
+    "ACCOUNT_NAME": "অ্যাকাউন্টের নাম",
+    "FULL_NAME": "পুরো নাম",
+    "STREET_ADDRESS_PLACEHOLDER": "রাস্তার ঠিকানা...",
+    "APARTMENT_SUITE_PLACEHOLDER": "অ্যাপার্টমেন্ট, স্যুট ইত্যাদি।"
   }
 }
