@@ -11,8 +11,10 @@ import Label from "@/components/form/Label";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 export default function UserInfoCard() {
+  const { t } = useTranslation();
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const {
@@ -190,7 +192,7 @@ export default function UserInfoCard() {
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">
               <span className={`inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium ${user.status === 1 ? "bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500" : "bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500"}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${user.status === 1 ? "bg-success-500" : "bg-error-500"}`}></span>
-                {user.status === 1 ? "Active" : "Inactive"}
+                {user.status === 1 ? t("ACTIVE") : t("INACTIVE")}
               </span>
             </p>
           </div>
@@ -201,7 +203,7 @@ export default function UserInfoCard() {
                   isShop ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' :
                     'bg-gray-50 text-gray-600 border-gray-100'
               }`}>
-              {user.role}
+              {t(user.role?.toUpperCase()) || user.role}
             </span>
             <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -238,7 +240,7 @@ export default function UserInfoCard() {
           {user.instagram && (
             <a href={user.instagram} target="_blank" rel="noreferrer" className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
               <svg className="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.8567 1.66699C11.7946 1.66854 12.2698 1.67351 12.6805 1.68573L12.8422 1.69102C13.0291 1.69766 13.2134 1.70599 13.4357 1.71641C14.3224 1.75738 14.9273 1.89766 15.4586 2.10391C16.0078 2.31572 16.4717 2.60183 16.9349 3.06503C17.3974 3.52822 17.6836 3.99349 17.8961 4.54141C18.1016 5.07197 18.2419 5.67753 18.2836 6.56433C18.2935 6.78655 18.3015 6.97088 18.3081 7.15775L18.3133 7.31949C18.3255 7.73011 18.3311 8.20543 18.3328 9.1433L18.3335 9.76463C18.3336 9.84055 18.3336 9.91888 18.3336 9.99972L18.3335 10.2348L18.333 10.8562C18.3314 11.794 18.3265 12.2694 18.3142 12.68L18.3089 12.8417C18.3023 13.0286 18.294 13.213 18.2836 13.4351C18.2426 14.322 18.1016 14.9268 17.8961 15.458C17.6842 16.0074 17.3974 16.4713 16.9349 16.9345C16.4717 17.397 16.0057 17.6831 15.4586 17.8955C14.9273 18.1011 14.3224 18.2414 13.4357 18.2831C13.2134 18.293 13.0291 18.3011 12.8422 18.3076L12.6805 18.3128C12.2698 18.3251 11.7946 18.3306 10.8567 18.3324L10.2353 18.333C10.1594 18.333 10.0811 18.333 10.0002 18.333H9.76516L9.14375 18.3325C8.20591 18.331 7.7306 18.326 7.31997 18.3137L7.15824 18.3085C6.97136 18.3018 6.78703 18.2935 6.56481 18.2831C5.67801 18.2421 5.07384 18.1011 4.5419 17.8955C3.99328 17.6838 3.5287 17.397 3.06551 16.9345C2.60231 16.4713 2.3169 16.0053 2.1044 15.458C1.89815 14.9268 1.75856 14.322 1.7169 13.4351C1.707 13.213 1.69892 13.0286 1.69238 12.8417L1.68714 12.68C1.67495 12.2694 1.66939 11.794 1.66759 10.8562L1.66748 9.1433C1.66903 8.20543 1.67399 7.73011 1.68621 7.31949L1.69151 7.15775C1.69815 6.97088 1.70648 6.78655 1.7169 6.56433C1.75786 5.67683 1.89815 5.07266 2.1044 4.54141C2.3162 3.9928 2.60231 3.52822 3.06551 3.06503C3.5287 2.60183 3.99398 2.31641 4.5419 2.10391C5.07315 1.89766 5.67731 1.75808 6.56481 1.71641C6.78703 1.70652 6.97136 1.69844 7.15824 1.6919L7.31997 1.68666C7.7306 1.67446 8.20591 1.6689 9.14375 1.6671L10.8567 1.66699ZM10.0002 5.83308C7.69781 5.83308 5.83356 7.69935 5.83356 9.99972C5.83356 12.3021 7.69984 14.1664 10.0002 14.1664C12.3027 14.1664 14.1669 12.3001 14.1669 9.99972C14.1669 7.69732 12.3006 5.83308 10.0002 5.83308ZM10.0002 7.49974C11.381 7.49974 12.5002 8.61863 12.5002 9.99972C12.5002 11.3805 11.3813 12.4997 10.0002 12.4997C8.6195 12.4997 7.50023 11.3809 7.50023 9.99972C7.50023 8.61897 8.61908 7.49974 10.0002 7.49974ZM14.3752 4.58308C13.8008 4.58308 13.3336 5.04967 13.3336 5.62403C13.3336 6.19841 13.8002 6.66572 14.3752 6.66572C14.9496 6.66572 15.4169 6.19913 15.4169 5.62403C15.4169 5.04967 14.9488 4.58236 14.3752 4.58308Z" fill="" />
+                <path d="M10.8567 1.66699C11.7946 1.66854 12.2698 1.67351 12.6805 1.68573L12.8422 1.69102C13.0291 1.69766 13.2134 1.70599 13.4357 1.71641C14.3224 1.75738 14.9273 1.89766 15.4586 2.10391C16.0078 2.31572 16.4717 2.60183 16.9349 3.06503C17.3974 3.52822 17.6836 3.99349 17.8961 4.54141C18.1016 5.07197 18.2419 5.67753 18.2836 6.56433C18.2935 6.78655 18.3015 6.97088 18.3081 7.15775L18.3133 7.31949C18.3255 7.73011 18.3311 8.20543 18.3328 9.1433L18.3335 9.76463C18.3336 9.84055 18.3336 9.91888 18.3336 9.99972L18.3335 10.2348L18.333 10.8562C18.3314 11.794 18.3265 12.2694 18.3142 12.68L18.3089 12.8417C18.3023 13.0286 18.294 13.213 18.2836 13.4351C18.2426 14.322 18.1016 14.9268 17.8961 15.458C17.6842 16.0074 17.3974 16.4713 16.9349 16.9345C16.4717 17.397 16.0057 17.6831 15.4586 17.8955C14.9273 18.1011 14.3224 18.2414 13.4357 18.2831C13.2134 18.293 13.0291 18.3011 12.8422 18.3076L12.8422 18.3076C12.8422 18.3076 12.8422 18.3076 12.8422 18.3076L12.6805 18.3128C12.2698 18.3251 11.7946 18.3306 10.8567 18.3324L10.2353 18.333C10.1594 18.333 10.0811 18.333 10.0002 18.333H9.76516L9.14375 18.3325C8.20591 18.331 7.7306 18.326 7.31997 18.3137L7.15824 18.3085C6.97136 18.3018 6.78703 18.2935 6.56481 18.2831C5.67801 18.2421 5.07384 18.1011 4.5419 17.8955C3.99328 17.6838 3.5287 17.397 3.06551 16.9345C2.60231 16.4713 2.3169 16.0053 2.1044 15.458C1.89815 14.9268 1.75856 14.322 1.7169 13.4351C1.707 13.213 1.69892 13.0286 1.69238 12.8417L1.68714 12.68C1.67495 12.2694 1.66939 11.794 1.66759 10.8562L1.66748 9.1433C1.66903 8.20543 1.67399 7.73011 1.68621 7.31949L1.69151 7.15775C1.69815 6.97088 1.70648 6.78655 1.7169 6.56433C1.75786 5.67683 1.89815 5.07266 2.1044 4.54141C2.3162 3.9928 2.60231 3.52822 3.06551 3.06503C3.5287 2.60183 3.99398 2.31641 4.5419 2.10391C5.07315 1.89766 5.67731 1.75808 6.56481 1.71641C6.78703 1.70652 6.97136 1.69844 7.15824 1.6919L7.31997 1.68666C7.7306 1.67446 8.20591 1.6689 9.14375 1.6671L10.8567 1.66699ZM10.0002 5.83308C7.69781 5.83308 5.83356 7.69935 5.83356 9.99972C5.83356 12.3021 7.69984 14.1664 10.0002 14.1664C12.3027 14.1664 14.1669 12.3001 14.1669 9.99972C14.1669 7.69732 12.3006 5.83308 10.0002 5.83308ZM10.0002 7.49974C11.381 7.49974 12.5002 8.61863 12.5002 9.99972C12.5002 11.3805 11.3813 12.4997 10.0002 12.4997C8.6195 12.4997 7.50023 11.3809 7.50023 9.99972C7.50023 8.61897 8.61908 7.49974 10.0002 7.49974ZM14.3752 4.58308C13.8008 4.58308 13.3336 5.04967 13.3336 5.62403C13.3336 6.19841 13.8002 6.66572 14.3752 6.66572C14.9496 6.66572 15.4169 6.19913 15.4169 5.62403C15.4169 5.04967 14.9488 4.58236 14.3752 4.58308Z" fill="" />
               </svg>
             </a>
           )}
@@ -248,14 +250,14 @@ export default function UserInfoCard() {
         <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fillRule="evenodd" clipRule="evenodd" d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z" fill="" />
         </svg>
-        Edit
+        {t("EDIT")}
       </button>
     </div>
 
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32 mt-6">
       <div>
         <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-          Phone
+          {t("PHONE")}
         </p>
         <p className="text-sm font-medium text-gray-800 dark:text-white/90">
           {user.phone || "N/A"}
@@ -264,7 +266,7 @@ export default function UserInfoCard() {
 
       <div>
         <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-          Date of Birth
+          {t("DATE_OF_BIRTH")}
         </p>
         <p className="text-sm font-medium text-gray-800 dark:text-white/90">
           {user.dob ? new Date(user.dob).toLocaleDateString() : "N/A"}
@@ -273,16 +275,16 @@ export default function UserInfoCard() {
 
       <div>
         <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-          Gender
+          {t("GENDER")}
         </p>
-        <p className="text-sm font-medium text-gray-800 dark:text-white/90 capitalize">
-          {user.gender || "N/A"}
+        <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+          {user.gender ? t(user.gender.toUpperCase()) : "N/A"}
         </p>
       </div>
 
       <div>
         <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-          Timezone
+          {t("TIMEZONE")}
         </p>
         <p className="text-sm font-medium text-gray-800 dark:text-white/90">
           {user.timezone || "N/A"}
@@ -295,7 +297,7 @@ export default function UserInfoCard() {
       <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
         <div className="mb-6 flex items-center gap-3">
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Partner Profile
+            {t("PARTNER_PROFILE")}
           </h4>
           <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
             {user.partner.email || "N/A"}
@@ -303,23 +305,23 @@ export default function UserInfoCard() {
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Company/Business Name</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("COMPANY_BUSINESS_NAME")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.name || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Phone</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("BUSINESS_PHONE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.phone || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Commission Rate</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("COMMISSION_RATE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.commission_rate ? `${user.partner.commission_rate}%` : "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Commission Type</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("COMMISSION_TYPE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.partner.commission_type || "N/A"}</p>
           </div>
           <div className="col-span-1 lg:col-span-2">
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Address</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("BUSINESS_ADDRESS")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">
               {user.partner.address_1 || user.partner.address_2 ? `${user.partner.address_1 || ''} ${user.partner.address_2 || ''}` : "N/A"}
             </p>
@@ -333,7 +335,7 @@ export default function UserInfoCard() {
       <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
         <div className="mb-6 flex items-center gap-3">
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Account Profile
+            {t("ACCOUNT_PROFILE")}
           </h4>
           <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
             {user.account.email || "N/A"}
@@ -341,19 +343,19 @@ export default function UserInfoCard() {
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Account Name</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("ACCOUNT_NAME")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.name || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Phone</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("BUSINESS_PHONE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.phone || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Representative</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("REPRESENTATIVE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.account.account_representative || "N/A"}</p>
           </div>
           <div className="col-span-1 lg:col-span-2">
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Business Address</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("BUSINESS_ADDRESS")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">
               {user.account.address_1 || user.account.address_2 ? `${user.account.address_1 || ''} ${user.account.address_2 || ''}` : "N/A"}
             </p>
@@ -367,7 +369,7 @@ export default function UserInfoCard() {
       <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-6">
         <div className="mb-6 flex items-center gap-3">
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Shop Profile
+            {t("SHOP_PROFILE")}
           </h4>
           <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
             {user.shop.status || "N/A"}
@@ -375,48 +377,48 @@ export default function UserInfoCard() {
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Shop Name</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("SHOP_NAME")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.name || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Shop Type</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("SHOP_TYPE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.shop_type?.title || 'N/A'}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Domain</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("DOMAIN")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.domain?.url || 'N/A'}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Representative</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("REPRESENTATIVE")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.shop_representative || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Contract Status</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("CONTRACT_STATUS")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.contract_status || "N/A"}</p>
           </div>
           <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Payment Method</p>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("PAYMENT_METHOD")}</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{user.shop.payment_method || "N/A"}</p>
           </div>
 
           {/* Shop Financials */}
           <div className="col-span-1 lg:col-span-2 border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
-            <h5 className="mb-4 text-sm font-semibold text-gray-800 dark:text-white/90">Financial Agreement</h5>
+            <h5 className="mb-4 text-sm font-semibold text-gray-800 dark:text-white/90">{t("FINANCIAL_AGREEMENT")}</h5>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Monthly Cost</p>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("MONTHLY_COST")}</p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user.shop.monthly_cost ? `$${user.shop.monthly_cost}` : "N/A"}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Initial Cost</p>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("INITIAL_COST")}</p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user.shop.initial_cost ? `$${user.shop.initial_cost}` : "N/A"}
                 </p>
               </div>
               <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Commission Rate</p>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">{t("COMMISSION_RATE")}</p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                   {user.shop.commission_rate ? `${user.shop.commission_rate}%` : "N/A"}
                   {user.shop.commission_type ? ` (${user.shop.commission_type})` : ""}
@@ -454,11 +456,11 @@ export default function UserInfoCard() {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
+              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800">
                   <Dialog.Title as="h3" className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Edit Profile
+                    {t("EDIT_PROFILE")}
                   </Dialog.Title>
                   <button
                     onClick={closeModal}
@@ -473,7 +475,7 @@ export default function UserInfoCard() {
                   <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                     <div>
                       <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                        Personal Information
+                        {t("PERSONAL_INFO")}
                       </h5>
 
                       <div className="flex items-center gap-4 mb-6">
@@ -494,51 +496,51 @@ export default function UserInfoCard() {
                           />
                         </div>
                         <div className="flex flex-col">
-                          <span onClick={handleAvatarClick} className="text-sm font-medium text-gray-800 dark:text-white/90 cursor-pointer hover:underline">Profile Picture</span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">Click image to upload new avatar</span>
+                          <span onClick={handleAvatarClick} className="text-sm font-medium text-gray-800 dark:text-white/90 cursor-pointer hover:underline">{t("PROFILE_PICTURE")}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">{t("CLICK_TO_UPLOAD")}</span>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                         <div className="col-span-2">
-                          <Label>Full Name</Label>
+                          <Label>{t("FULL_NAME")}</Label>
                           <Input type="text" name="name" value={formData.name} onChange={handleChange} />
                         </div>
 
                         <div className="col-span-2 lg:col-span-1">
-                          <Label>Phone</Label>
+                          <Label>{t("PHONE")}</Label>
                           <Input type="text" name="phone" value={formData.phone} onChange={handleChange} />
                         </div>
 
                         <div className="col-span-2 lg:col-span-1">
-                          <Label>Date of Birth</Label>
+                          <Label>{t("DATE_OF_BIRTH")}</Label>
                           <Input type="date" name="dob" value={formData.dob} onChange={handleChange} className="dark:[color-scheme:dark]" />
                         </div>
 
                         <div className="col-span-2 lg:col-span-1">
-                          <Label>Gender</Label>
+                          <Label>{t("GENDER")}</Label>
                           <select
                             name="gender"
                             value={formData.gender}
                             onChange={handleChange}
                             className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                           >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <option value="">{t("SELECT_GENDER")}</option>
+                            <option value="male">{t("MALE")}</option>
+                            <option value="female">{t("FEMALE")}</option>
+                            <option value="other">{t("OTHER")}</option>
                           </select>
                         </div>
 
                         <div className="col-span-2 lg:col-span-1">
-                          <Label>Timezone</Label>
+                          <Label>{t("TIMEZONE")}</Label>
                           <select
                             name="timezone"
                             value={formData.timezone}
                             onChange={handleChange}
                             className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                           >
-                            <option value="">Select Timezone</option>
+                            <option value="">{t("SELECT_TIMEZONE")}</option>
                             {timezones.map(tz => (
                               <option key={tz} value={tz}>{tz}</option>
                             ))}
@@ -551,7 +553,7 @@ export default function UserInfoCard() {
                     {(isPartner || isAccount || isShop) && (
                       <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-8">
                         <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                          {isPartner ? 'Partner Information' : isAccount ? 'Account Information' : 'Shop Information'}
+                          {isPartner ? t("PARTNER_INFO") : isAccount ? t("ACCOUNT_INFO") : t("SHOP_INFO")}
                         </h5>
 
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -559,11 +561,11 @@ export default function UserInfoCard() {
                           {isPartner && (
                             <>
                               <div className="col-span-2">
-                                <Label>Company/Business Name</Label>
+                                <Label>{t("COMPANY_BUSINESS_NAME")}</Label>
                                 <Input type="text" name="partner_name" value={formData.partner_name} onChange={handleChange} />
                               </div>
                               <div className="col-span-2">
-                                <Label>Business Phone</Label>
+                                <Label>{t("BUSINESS_PHONE")}</Label>
                                 <Input type="text" name="partner_phone" value={formData.partner_phone} onChange={handleChange} />
                               </div>
                             </>
@@ -573,15 +575,15 @@ export default function UserInfoCard() {
                           {isAccount && (
                             <>
                               <div className="col-span-2">
-                                <Label>Account/Business Name</Label>
+                                <Label>{t("ACCOUNT_NAME")}</Label>
                                 <Input type="text" name="account_name" value={formData.account_name} onChange={handleChange} />
                               </div>
                               <div className="col-span-2">
-                                <Label>Business Phone</Label>
+                                <Label>{t("BUSINESS_PHONE")}</Label>
                                 <Input type="text" name="account_phone" value={formData.account_phone} onChange={handleChange} />
                               </div>
                               <div className="col-span-2 lg:col-span-1">
-                                <Label>Account Representative</Label>
+                                <Label>{t("REPRESENTATIVE")}</Label>
                                 <Input type="text" name="account_representative" value={formData.account_representative} onChange={handleChange} />
                               </div>
                             </>
@@ -591,19 +593,19 @@ export default function UserInfoCard() {
                           {isShop && (
                             <>
                               <div className="col-span-2">
-                                <Label>Shop Name</Label>
+                                <Label>{t("SHOP_NAME")}</Label>
                                 <Input type="text" name="shop_name" value={formData.shop_name} onChange={handleChange} />
                               </div>
                               <div className="col-span-2 lg:col-span-1">
-                                <Label>Shop Representative</Label>
+                                <Label>{t("REPRESENTATIVE")}</Label>
                                 <Input type="text" name="shop_representative" value={formData.shop_representative} onChange={handleChange} />
                               </div>
                               <div className="col-span-2 lg:col-span-1">
-                                <Label>Shop Phone</Label>
+                                <Label>{t("BUSINESS_PHONE")}</Label>
                                 <Input type="text" name="shop_phone" value={formData.shop_phone} onChange={handleChange} />
                               </div>
                               <div className="col-span-2">
-                                <Label>Additional Notes</Label>
+                                <Label>{t("NOTES")}</Label>
                                 <textarea
                                   name="shop_note"
                                   value={formData.shop_note}
@@ -621,7 +623,7 @@ export default function UserInfoCard() {
                     {/* Social Links Section in Form */}
                     <div className="mt-8">
                       <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                        Social Links
+                        {t("SOCIAL_LINKS")}
                       </h5>
                       <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                         <div>
@@ -648,10 +650,10 @@ export default function UserInfoCard() {
                 {/* Footer */}
                 <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-3 mt-auto">
                   <Button size="sm" variant="outline" onClick={closeModal} type="button">
-                    Cancel
+                    {t("CANCEL")}
                   </Button>
                   <Button size="sm" onClick={handleSave} type="button">
-                    Save Changes
+                    {t("SAVE_CHANGES")}
                   </Button>
                 </div>
               </Dialog.Panel>
