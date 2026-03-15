@@ -41,13 +41,14 @@ const ShopCustomersView = ({ shopId }) => {
 
     const isPartner = user?.type === 2 || user?.role === 'partner';
     const isRoot = user?.type === 0 || user?.role === 'root';
-    const isAdmin = user?.type === 4 || user?.role === 'administrator';
+    const isAdministrator = user?.type === 4 || user?.role === 'administrator';
     const isAccount = user?.type === 3 || user?.role === 'account';
     const isShop = user?.type === 5 || user?.role === 'shop';
+    const isFullAdmin = isRoot || isAdministrator;
 
-    const canEdit = isRoot || isAdmin;
-    const canAdd = isRoot || isAdmin;
-    const canToggle = isRoot || isAdmin || isAccount || isShop;
+    const canEdit = isFullAdmin || isPartner;
+    const canAdd = isFullAdmin;
+    const canToggle = isFullAdmin || isAccount || isShop;
 
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
@@ -394,7 +395,7 @@ const ShopCustomersView = ({ shopId }) => {
                     title={t("EDIT_CUSTOMER")}
                     fields={{
                         name: { label: t("NAME"), type: "text" },
-                        email: { label: t("EMAIL"), type: "email" },
+                        email: { label: t("EMAIL"), type: "email", disabled: !isFullAdmin },
                         phone: { label: t("PHONE"), type: "text" },
                         dob: { label: t("DATE_OF_BIRTH"), type: "date" },
                         gender: {

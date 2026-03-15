@@ -41,8 +41,10 @@ const PartnerAccountsView = ({ partnerId }) => {
 
     const isPartner = user?.type === 2 || user?.role === 'partner';
     const isRoot = user?.type === 0;
+    const isAdministrator = user?.type === 4;
+    const isFullAdmin = isRoot || isAdministrator;
 
-    const canEdit = isRoot || isPartner;
+    const canEdit = isFullAdmin || isPartner;
 
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
@@ -388,7 +390,7 @@ const PartnerAccountsView = ({ partnerId }) => {
                     title={t("EDIT_ACCOUNT")}
                     fields={{
                         name: { label: t("NAME"), type: "text" },
-                        email: { label: t("EMAIL"), type: "email" },
+                        email: { label: t("EMAIL"), type: "email", dataKey: "user.email", disabled: !isFullAdmin },
                         phone: { label: t("PHONE"), type: "text" },
                         account_representative: { label: t("REPRESENTATIVE"), type: "text" },
                         address_1: { label: t("ADDRESS_1"), type: "text" },

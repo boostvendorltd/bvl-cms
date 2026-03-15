@@ -44,7 +44,9 @@ const AccountShopsView = ({ accountId }) => {
 
     const isPartner = user?.type === 2 || user?.role === 'partner';
     const isRoot = user?.type === 0;
-    const canEdit = isRoot || isPartner;
+    const isAdministrator = user?.type === 4;
+    const isFullAdmin = isRoot || isAdministrator;
+    const canEdit = isFullAdmin || isPartner;
 
     const [confirmModal, setConfirmModal] = useState({
         isOpen: false,
@@ -508,6 +510,7 @@ const AccountShopsView = ({ accountId }) => {
                     title={t("EDIT_SHOP")}
                     fields={{
                         name: { label: t("NAME"), type: "text" },
+                        email: { label: t("EMAIL"), type: "email", dataKey: "user.email", disabled: !isFullAdmin },
                         domain_url: { label: t("DOMAIN"), type: "text", dataKey: "domain.url", disabled: !isRoot },
                         unique_domain: { label: "Unique Domain ID", type: "text", dataKey: "domain.unique_domain", disabled: !isRoot },
                         type_id: {
