@@ -294,9 +294,9 @@ const AccountShopsView = ({ accountId }) => {
             header: t("DOMAIN"),
             accessor: "domain",
             render: (domain) => domain ? (
-                <a 
-                    href={domain.url?.startsWith('http') ? domain.url : `https://${domain.url}`} 
-                    target="_blank" 
+                <a
+                    href={domain.url?.startsWith('http') ? domain.url : `https://${domain.url}`}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 hover:underline transition-colors text-sm"
                 >
@@ -309,10 +309,14 @@ const AccountShopsView = ({ accountId }) => {
         },
         {
             header: t("EMAIL"),
-            accessor: "email",
-            render: (email) => email ? (
-                <span className="text-gray-600 dark:text-gray-400 text-sm truncate max-w-[140px] block">{email}</span>
-            ) : <span className="text-gray-400 text-sm">{t("NO_EMAIL")}</span>
+            accessor: "user",
+            render: (user) => user?.email ? (
+                <span className="text-gray-600 dark:text-gray-400 text-sm truncate max-w-[140px] block">
+                    {user.email}
+                </span>
+            ) : (
+                <span className="text-gray-400 text-sm">{t("NO_EMAIL")}</span>
+            )
         },
         {
             header: t("PHONE"),
@@ -326,13 +330,13 @@ const AccountShopsView = ({ accountId }) => {
                 const shopType = row.shopType || row.shop_type;
                 const typeName = shopType?.title || type || "UNKNOWN";
                 const isEcommerce = String(typeName).toLowerCase().includes('ecommerce');
-                
+
                 // Convert "E-commerce" to "ECOMMERCE", "Pharmacy" to "PHARMACY"
                 const translationKey = String(typeName)
                     .replace(/[-]/g, '') // Remove dashes (E-commerce -> Ecommerce)
                     .replace(/[\s]/g, '_') // Replace spaces with underscore
                     .toUpperCase();
-                
+
                 return (
                     <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${isEcommerce ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
                         }`}>
