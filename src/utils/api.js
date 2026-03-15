@@ -20,10 +20,10 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        // const lang = localStorage.getItem("lang") || "en"; 
-        // config.headers["lang"] = lang;
-
         if (typeof window !== "undefined") {
+            const lang = localStorage.getItem("i18nextLng") || "en";
+            config.headers["lang"] = lang;
+
             config.headers["X-Domain"] = window.location.hostname;
 
             const shopId = localStorage.getItem("current_shop_id");
