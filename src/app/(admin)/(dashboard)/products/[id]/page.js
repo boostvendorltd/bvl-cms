@@ -647,7 +647,7 @@ const ProductEditorPage = () => {
                         {/* Existing Variants Table */}
                         <div className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-base font-semibold text-gray-900">
+                                <h3 className="text-base font-semibold text-gray-900 dark:text-white/90">
                                     Variants ({productVariants.length})
                                 </h3>
                                 {Object.keys(variantEdits).length > 0 && (
