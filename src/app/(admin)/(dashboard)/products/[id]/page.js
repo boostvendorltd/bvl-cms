@@ -298,7 +298,8 @@ const ProductEditorPage = () => {
     const hasVariantCombinations = productVariants.some((v) => v.combinations?.length > 0);
 
     const getVariantLabel = (variant) => {
-        if (!variant.combinations?.length) return "---";
+        // default varient -------
+        if (!variant.combinations?.length) return;
         return variant.combinations
             .map((c) => c.attribute_value?.value || "")
             .filter(Boolean)
@@ -781,6 +782,7 @@ const ProductEditorPage = () => {
                                 <div className="text-center">
                                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Click to upload images</p>
                                     <p className="text-xs text-gray-400">JPEG, PNG, WebP — max 5MB each</p>
+                                    <p className="text-xs text-gray-400">Recommended size: 400x400px</p>
                                 </div>
                                 <input
                                     ref={fileInputRef}
