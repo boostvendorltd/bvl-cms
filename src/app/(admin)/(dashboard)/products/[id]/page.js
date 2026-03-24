@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import RichTextEditor from "@/components/form/RichTextEditor";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
 import PageBreadCrumb from "@/components/common/PageBreadCrumb";
@@ -395,12 +396,9 @@ const ProductEditorPage = () => {
                                 </div>
                                 <div>
                                     <label className="block mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                                    <textarea
+                                    <RichTextEditor
                                         value={form.description}
-                                        onChange={(e) => handleChange("description", e.target.value)}
-                                        rows={5}
-                                        placeholder="Detailed product description..."
-                                        className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                                        onChange={(val) => handleChange("description", val)}
                                     />
                                 </div>
                             </div>
