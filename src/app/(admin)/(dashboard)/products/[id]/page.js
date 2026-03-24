@@ -298,7 +298,7 @@ const ProductEditorPage = () => {
     const hasVariantCombinations = productVariants.some((v) => v.combinations?.length > 0);
 
     const getVariantLabel = (variant) => {
-        if (!variant.combinations?.length) return "Default";
+        if (!variant.combinations?.length) return "---";
         return variant.combinations
             .map((c) => c.attribute_value?.value || "")
             .filter(Boolean)
@@ -666,6 +666,7 @@ const ProductEditorPage = () => {
                                     No variants yet. Use the generator above to create combinations.
                                 </p>
                             ) : (
+                                console.log("productVariants", productVariants),
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-gray-700">
                                         <thead className="bg-gray-50 dark:bg-gray-900/50">
@@ -673,6 +674,8 @@ const ProductEditorPage = () => {
                                                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Variant</th>
                                                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">SKU</th>
                                                 <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Price</th>
+                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Compare Price</th>
+                                                <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Cost Per Item</th>
                                                 <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Qty</th>
                                                 <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Weight</th>
                                                 <th className="px-3 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
@@ -685,10 +688,10 @@ const ProductEditorPage = () => {
                                                     <tr key={v.id} className="hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
                                                         <td className="px-3 py-2">
                                                             <div className="flex items-center gap-2">
+                                                                <span className="font-medium text-gray-800 dark:text-gray-200">{getVariantLabel(v)}</span>
                                                                 {v.is_default && (
                                                                     <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Default</span>
                                                                 )}
-                                                                <span className="font-medium text-gray-800 dark:text-gray-200">{getVariantLabel(v)}</span>
                                                             </div>
                                                         </td>
                                                         <td className="px-3 py-2">
@@ -705,6 +708,24 @@ const ProductEditorPage = () => {
                                                                 step="0.01"
                                                                 defaultValue={v.price}
                                                                 onChange={(e) => handleVariantFieldChange(v.id, "price", parseFloat(e.target.value))}
+                                                                className="w-24 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right">
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                defaultValue={v.compare_price}
+                                                                onChange={(e) => handleVariantFieldChange(v.id, "compare_price", parseFloat(e.target.value))}
+                                                                className="w-24 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right">
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                defaultValue={v.cost_per_item}
+                                                                onChange={(e) => handleVariantFieldChange(v.id, "cost_per_item", parseFloat(e.target.value))}
                                                                 className="w-24 px-2 py-1 text-xs text-right border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded focus:ring-1 focus:ring-blue-500 outline-none"
                                                             />
                                                         </td>
