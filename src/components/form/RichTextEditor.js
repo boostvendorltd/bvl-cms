@@ -61,6 +61,10 @@ export default function RichTextEditor({ value, onChange }) {
         .dark .ql-snow .ql-picker {
           color: #9ca3af;
         }
+        .ql-editor {
+          word-break: break-word;
+          overflow-wrap: break-word;
+        }
         .dark .ql-editor {
           color: #e5e7eb;
         }
