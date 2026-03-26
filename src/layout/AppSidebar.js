@@ -70,9 +70,12 @@ const AppSidebar = () => {
       name: t(companiesLabel.toUpperCase()),
       path: companiesPath
     },
-    // Only show Shop Management to Account(3) and Shop(5) if they have shops
     ...(((user?.type == 3 && user?.account?.shops?.length > 0) ||
       (user?.type == 5 && user?.shop)) ? [{
+        icon: <ListIcon />,
+        name: t("ORDERS"),
+        path: "/orders"
+      }, {
         icon: <BoxCubeIcon />, // Using box icon for products
         name: t("PRODUCTS"),
         subItems: [{
@@ -104,6 +107,10 @@ const AppSidebar = () => {
         subItems: [{
           name: t("TAXES"),
           path: "/taxes",
+          pro: false
+        }, {
+          name: t("SHIPPING_METHODS"),
+          path: "/shipping-methods",
           pro: false
         }]
       }] : []),
