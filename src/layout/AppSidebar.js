@@ -70,7 +70,7 @@ const AppSidebar = () => {
       name: t(companiesLabel.toUpperCase()),
       path: companiesPath
     },
-    // Only show Products to Account(3) and Shop(5) if they have shops
+    // Only show Shop Management to Account(3) and Shop(5) if they have shops
     ...(((user?.type == 3 && user?.account?.shops?.length > 0) ||
       (user?.type == 5 && user?.shop)) ? [{
         icon: <BoxCubeIcon />, // Using box icon for products
@@ -86,6 +86,24 @@ const AppSidebar = () => {
         }, {
           name: t("CATEGORIES"),
           path: "/categories",
+          pro: false
+        }]
+      },
+      {
+        icon: <PlugInIcon />,
+        name: t("MARKETING"),
+        subItems: [{
+          name: t("DISCOUNTS"),
+          path: "/discounts",
+          pro: false
+        }]
+      },
+      {
+        icon: <PageIcon />, // Using page icon for settings/taxes
+        name: t("SETTINGS"),
+        subItems: [{
+          name: t("TAXES"),
+          path: "/taxes",
           pro: false
         }]
       }] : []),

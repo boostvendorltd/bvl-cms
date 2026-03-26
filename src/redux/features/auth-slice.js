@@ -12,7 +12,7 @@ export const fetchUserProfile = createAsyncThunk(
     "auth/fetchUserProfile",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.get("/user");
+            const response = await api.get("/cms/user");
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch user");
@@ -51,7 +51,7 @@ export const logout = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-            await api.post("/logout");
+            await api.post("/cms/logout");
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Logout failed");
         }
